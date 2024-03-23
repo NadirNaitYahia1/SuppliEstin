@@ -531,6 +531,41 @@ def validate_url_list(value):
         except ValidationError as exception:
             raise ValidationError(_('Liste des URLs incorrecte, vérifiez que toutes les URLs commencent par http ou https, ainsi qu\'elles soient séparées par des sauts de ligne. Ne laissez pas de lignes vides.'))
 
+# -------------------------------------------------------------------------------------------------
+# Session( #idEnseignat  ; id Séance; #idTabmois ;  Date; heur_debut, heur_fin , nb_heurs )
+# TabMois(idTabMois,#idEnseignat,nomMois,année  ; total_heurs_supps,#idMois)
+# volume Autorisé(#idEnseignant , Volume_horaire_autorisé )
+# Mois_admin: (idMois, nom_mois, nb_semaines , #années_univ{illa g le models nsen})
+        
+class AdminMois(models.Model):
+    idMois = models.AutoField(primary_key=True)
+    nomMois= models.CharField(max_length=20)
+    nbSemaines = models.IntegerField()
+    anneeUniv = models.ForeignKey('AnneeUniv', on_delete=models.CASCADE) 
+
+class VolumeAutorise(models.Model):
+    idEnseignat  = models.ForeignKey('Enseignant', on_delete=models.CASCADE)
+    VolumeHoraireAutorise = models.IntegerField()
+
+class TabMois(models.Model):
+    idTabMois    = models.AutoField(primary_key=True)
+    idEnseignat  = models.ForeignKey('Enseignant', on_delete=models.CASCADE)
+    nomMois      = models.CharField(max_length=20)
+    annee        = models.IntegerField()
+    total_heurs_supps = models.IntegerField()
+    idMois = models.ForeignKey('AdminMois', on_delete=models.CASCADE) 
+
+
+class Session(models.Model):
+    idEnseignat = models.ForeignKey('Enseignant', on_delete=models.CASCADE)
+    idSeance    = models.AutoField(primary_key=True)
+    idTabmois   = models.ForeignKey('TabMois', on_delete=models.CASCADE)
+    Date        = models.DateField()
+    heurDebut  = models.TimeField()
+    heurFin    = models.TimeField()
+    nb_heurs    = models.IntegerField()
+
+# -----------------------------------------------------------------------------------------------------------
 
 class Enseignant(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
