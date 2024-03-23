@@ -531,41 +531,124 @@ def validate_url_list(value):
         except ValidationError as exception:
             raise ValidationError(_('Liste des URLs incorrecte, vérifiez que toutes les URLs commencent par http ou https, ainsi qu\'elles soient séparées par des sauts de ligne. Ne laissez pas de lignes vides.'))
 
-# -------------------------------------------------------------------------------------------------
-# Session( #idEnseignat  ; id Séance; #idTabmois ;  Date; heur_debut, heur_fin , nb_heurs )
-# TabMois(idTabMois,#idEnseignat,nomMois,année  ; total_heurs_supps,#idMois)
-# volume Autorisé(#idEnseignant , Volume_horaire_autorisé )
-# Mois_admin: (idMois, nom_mois, nb_semaines , #années_univ{illa g le models nsen})
-        
+# _____________________________________________________________ ADDED FOR SCHEDULE MANAGEMENT _____________________________________________________________
+    
+MOIS = (
+    ('Jan', 'Janvier'),
+    ('Fev', 'Février'),
+    ('Mar', 'Mars'),
+    ('Avr', 'Avril'),
+    ('Mai', 'Mai'),
+    ('Juin', 'Juin'),
+    ('Juil', 'Juillet'),
+    ('Aout', 'Aout'),
+    ('Sep', 'Septembre'),
+    ('Oct', 'Octobre'),
+    ('Nov', 'Novembre'),
+    ('Dec', 'Décembre'),
+)
+
 class AdminMois(models.Model):
     idMois = models.AutoField(primary_key=True)
-    nomMois= models.CharField(max_length=20)
+    numMois = models.IntegerField()
+    nomMois= models.CharField(max_length=20, choices=MOIS)
     nbSemaines = models.IntegerField()
-    anneeUniv = models.ForeignKey('AnneeUniv', on_delete=models.CASCADE) 
+    anneeUniv = models.ForeignKey('AnneeUniv', on_delete=models.CASCADE)
+    isEditable = models.BooleanField(default=True) 
+
+    def __str__(self):
+        return self.nomMois+" "+str(self.anneeUniv)
+    
+    def get_annee(self):
+        return self.anneeUniv
+    
+    def get_nbSemaines(self):
+        return self.nbSemaines
+    
+    def set_notEditable(self):
+        self.isEditable = False
+        self.save()
+
+    def save(self, *args, **kwargs):
+        if self.numMois < 1 or self.numMois > 12:
+            raise ValidationError("Le numéro du mois doit être compris entre 1 et 12")
+        if self.nbSemaines < 1 or self.nbSemaines > 4:
+            raise ValidationError("Le nombre de semaines doit être compris entre 1 et 4")
+        super().save(*args, **kwargs)
 
 class VolumeAutorise(models.Model):
-    idEnseignat  = models.ForeignKey('Enseignant', on_delete=models.CASCADE)
+    idEnseignant  = models.ForeignKey('Enseignant', on_delete=models.CASCADE)
     VolumeHoraireAutorise = models.IntegerField()
+
 
 class TabMois(models.Model):
     idTabMois    = models.AutoField(primary_key=True)
-    idEnseignat  = models.ForeignKey('Enseignant', on_delete=models.CASCADE)
+    idEnseignat  = models.OneToOneField('Enseignant', on_delete=models.CASCADE)
     nomMois      = models.CharField(max_length=20)
-    annee        = models.IntegerField()
-    total_heurs_supps = models.IntegerField()
-    idMois = models.ForeignKey('AdminMois', on_delete=models.CASCADE) 
+    heursSupps   = models.IntegerField()
+    minutesSupps  = models.IntegerField()
+    idMois = models.ForeignKey('AdminMois', on_delete=models.CASCADE)
+    isEditable = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.nomMois+" "+str(self.idMois.anneeUniv)+" "+str(self.idEnseignat)
+    
+    def get_heursSupps(self):
+        return self.heursSupps+"h "+self.minutesSupps+"min"
+    
+    def set_notEditable(self):
+        self.isEditable = False
+        self.save()
+
+    def save(self, *args, **kwargs):
+        if self.heursSupps < 0:
+            raise ValidationError("Le nombre d'heures supplémentaires doit être positif")
+        if self.minutesSupps < 0 or self.minutesSupps > 59:
+            raise ValidationError("Le nombre de minutes supplémentaires doit être compris entre 0 et 59")
+        super().save(*args, **kwargs)
+
+SESSION_TYPE = (
+    ('Cours', 'Cours'),
+    ('TD', 'Travaux Dirigés'),
+    ('TP', 'Travaux Pratiques'),
+    ('Examen', 'Examen'),
+    ('Correction', 'Correction de copies'),
+    ('Reunion', 'Réunion'),
+)
 
 class Session(models.Model):
     idEnseignat = models.ForeignKey('Enseignant', on_delete=models.CASCADE)
+    typeSession = models.CharField(max_length=20, choices=SESSION_TYPE, default='Cours', null=True)
     idSeance    = models.AutoField(primary_key=True)
-    idTabmois   = models.ForeignKey('TabMois', on_delete=models.CASCADE)
-    Date        = models.DateField()
-    heurDebut  = models.TimeField()
-    heurFin    = models.TimeField()
-    nb_heurs    = models.IntegerField()
+    idTabMois   = models.ForeignKey('TabMois', on_delete=models.CASCADE)
+    Date        = models.DateField(null=True)
+    heurDebut  = models.TimeField(null=True)
+    heurFin    = models.TimeField(null=True)
+    heurs    = models.IntegerField()
+    minutes = models.IntegerField()
 
-# -----------------------------------------------------------------------------------------------------------
+    def __str__(self):
+        return str(self.idSeance)+" "+str(self.idEnseignat)+" "+str(self.Date)
+    
+    def get_heurs(self):
+        return self.heurs+"h "+self.minutes+"min"
+    
+    def save(self, *args, **kwargs):
+        if self.heurs < 0:
+            raise ValidationError("Le nombre d'heures doit être positif")
+        if self.minutes < 0 or self.minutes > 59:
+            raise ValidationError("Le nombre de minutes doit être compris entre 0 et 59")
+        super().save(*args, **kwargs)
+
+
+    def save(self, *args, **kwargs):
+        if self.heurs < 0:
+            raise ValidationError("Le nombre d'heures doit être positif")
+        if self.minutes < 0 or self.minutes > 59:
+            raise ValidationError("Le nombre de minutes doit être compris entre 0 et 59")
+        super().save(*args, **kwargs)
+
+# ________________________________________________________________________________________________________________________________________________________
 
 class Enseignant(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
