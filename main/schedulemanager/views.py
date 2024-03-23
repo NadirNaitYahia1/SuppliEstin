@@ -1,17 +1,27 @@
 from django.shortcuts import render
+from .models import *
 
 # Create your views here.
 
 def index(request):
     return render(request, 'index.html')
 
+
+# ______________________________________________________________________________________________________________________
 def set_months(request,year):
     context = {
         'year': year
     }
     return render(request, 'set_months.html',context)
 
+
+ 
+
+
+# ______________________________________________________________________________________________________________________
+
 def fiche_heurs_supps(request, year, month):
+
     context = {
         'year': year,
         'month': month
