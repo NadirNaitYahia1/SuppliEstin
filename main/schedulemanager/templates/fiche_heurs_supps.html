@@ -1,13 +1,38 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{% static 'output.css' %}" />
     <title>Document</title>
+    <script>
+
+        addEventListener("DOMContentLoaded", () => {
+            const btns = document.querySelectorAll("btn-permanant");
+            btns.forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    btn.classList.toggle("bg-col-1");
+                    btn.classList.toggle("text-white");
+                });
+            });
+        });
+    </script>
 </head>
 <body>
-    <h1>Heures supplémentaires pour tout les enseignants {{type}}</h1>
-    <h2>year: {{year}}</h2>
-    <h2>month: {{month}}</h2>
+    <div className="flex items-center mb-3">
+        <p>Enseignants:  </p>
+        
+            
+            <button class="btn-permanant border">
+                Permanant
+            </button>
+        
+        <button className=  "border bg-col-1 rounded-md p-2 text-white mx-2   " >
+            Vacataire
+        </button>
+
+    </div>
+
 </body>
 </html>
