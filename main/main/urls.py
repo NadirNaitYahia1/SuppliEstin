@@ -21,4 +21,5 @@ from django.urls import path,include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('schedulemanager.urls')),
+    path('theme/', include('theme.urls')),
 ]
