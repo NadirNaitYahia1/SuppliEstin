@@ -27,7 +27,26 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'schedulemanager.apps.SchedulemanagerConfig',
+    'tailwind',
+    'theme',
 ]
+
+TAILWIND_APP_NAME = 'theme'
+
+#  internal ips
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -40,7 +59,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'main.urls'
-NPM_BIN_PATH = 'C:\Program Files\nodejs\npm.cmd'
+NPM_BIN_PATH = 'C:\\Program Files\\nodejs\\npm.cmd'
 
 TEMPLATES = [
     {
@@ -104,8 +123,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'theme/static_src')
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

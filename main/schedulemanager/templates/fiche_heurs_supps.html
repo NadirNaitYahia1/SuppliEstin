@@ -1,35 +1,23 @@
-{% load static %}
+{% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="{% static 'output.css' %}" />
-    <title>Document</title>
-    <script>
-
-        addEventListener("DOMContentLoaded", () => {
-            const btns = document.querySelectorAll("btn-permanant");
-            btns.forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    btn.classList.toggle("bg-col-1");
-                    btn.classList.toggle("text-white");
-                });
-            });
-        });
-    </script>
-</head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {% tailwind_css %}
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        />
+        <title></title>
+      </head>
 <body>
-    <div className="flex items-center mb-3">
-        <p>Enseignants:  </p>
+    <div class="flex items-center mb-3">
+
+        <p>Enseignant</p>
         
-            
-            <button class="btn-permanant border">
-                Permanant
-            </button>
-        
-        <button className=  "border bg-col-1 rounded-md p-2 text-white mx-2   " >
-            Vacataire
+        <button class="border-2 bg-current rounded-md bg-red">
+            Permanant 
         </button>
 
     </div>
