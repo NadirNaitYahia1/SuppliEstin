@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import AnneeUniv, AdminMois
+from .models import AnneeUniv, AdminMois,Enseignant
 import calendar
 from datetime import datetime, timedelta
 from django.http import JsonResponse
@@ -56,10 +56,20 @@ def set_months(request,year):
 # ____________________________________________________________________________________________________________________________________
 
 def fiche_heurs_supps(request, type,year, month):
+    print(type[0:1])
+    if type[0:1].upper() in ['V','P']:
+        profs = Enseignant.get_profs(type[0:1].upper())
+    else:   
+        return render(request, '404.html')
+    
+    for prof in profs:
+        print(prof.grade)
+
     context = {
         'type': type, # 'vacataires' or 'permanent
         'year': year,
-        'month': month
+        'month': month,
+        'profs': profs,
     
     }
     return render(request, 'fiche_heurs_supps.html', context)

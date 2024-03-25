@@ -438,6 +438,7 @@ class AnneeUniv(models.Model):
     
     def __str__(self):
         return self.annee_univ
+    
 
     
 
@@ -733,7 +734,15 @@ class Enseignant(models.Model):
     
     def __str__(self):
         return f"{self.nom} {self.prenom}"
- 
+
+    def get_profs(statuDuProf):
+        if statuDuProf in ['P', 'V']:
+            return Enseignant.objects.filter(statut=statuDuProf)
+        else:
+            raise ValueError("Statut du professeur non valide")
+
+    
+
 class Autorite(models.Model):
     intitule=models.CharField(max_length=100, verbose_name="Intitulé")
     intitule_a=models.CharField(max_length=100, null=True, blank=True, verbose_name="Intitulé arabe")
