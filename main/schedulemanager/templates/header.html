@@ -1,0 +1,65 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% tailwind_css %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      integrity="sha384-BJH7Fdq8+JAY9eBYBY8Ovh9gDAoS67E0b5z+ZuI1tkCTUKU0jO8ssIbLD8gVtUkG"
+      crossorigin="anonymous"
+    />
+    <title>{% block title %} header {% endblock %}</title>
+  </head>
+  <body>
+    <div class="mx-auto w-[90%] border">
+      <div>
+        <p class="text-center">
+          الجمهوريــة الجزائريــة الديمقراطيــة الشعبيــة
+        </p>
+        <p class="text-center">
+          Republique Algérienne Démocratique et Populaire
+        </p>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <div class="title-2 w-[30%]">
+          <p>
+            Ministère de l'Enseignement Supérieur et de la Recherche
+            Scientifique
+          </p>
+          <p>
+            École supérieure en Sciences et Technologies de l'Informatique et du
+            Numérique -Bejaia-
+          </p>
+        </div>
+
+        <div class="logo-1 h-[10%] w-[15%]">
+          <img src="{% static '../static/estin.png' %}" alt="logo" />
+        </div>
+
+        <div class="title-2 w-[30%]">
+          <p>وزارة التعليم العالي والبحث العلمي</p>
+          <p>
+            المدرسة العليا في علوم وتكنولوجيات الاعلام الالي والرقمنة -بجاية
+          </p>
+        </div>
+      </div>
+    </div>
+    <div id="content">{% block content %} {% endblock %}</div>
+  </body>
+</html>

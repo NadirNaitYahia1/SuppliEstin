@@ -1,0 +1,82 @@
+NADIR's Garbage
+
+<!-- {% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Color Change Example</title>
+    {% tailwind_css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+</head>
+
+<body > -->
+
+<!-- _______________________________________btn for changing between permanant and vacataire ______________________________________________ -->
+    <!-- <div class="flex items-center mb-3 mt-3 ms-2">
+        <p>Enseignant</p>
+        <button class="btn1 bg-blue-950 rounded-md p-2 text-white mx-2">
+            Permanant
+        </button>
+        <button class="btn2 bg-blue-300 rounded-md p-2 text-white mx-2">
+            Vacataire
+        </button>
+    </div> -->
+<!-- ___________________________________________________________Head1____________________________________________________________________________ -->
+    <!-- <div class='mx-auto w-[90%]  border '>
+            <div >
+                <p  class="text-center">الجمهوريــة الجزائريــة الديمقراطيــة الشعبيــة</p>
+                <p  class="text-center">Republique Algérienne Démocratique et Populaire</p>
+            </div>
+            
+            <div class="flex justify-between items-center  ">
+               <div class="title-2 w-[30%]">
+                    <p>Ministère de l'Enseignement Supérieur et de la Recherche Scientifique</p>
+                    <p>École supérieure en Sciences et Technologies de l'Informatique et du Numérique -Bejaia-</p>
+                </div>
+               
+                <div class="logo-1 h-[10%] w-[15%]">
+                    <img src="{% static '../static/estin.png' %}"  alt="logo" />
+                </div>
+                
+                <div class="title-2 w-[30%]">
+                    <p>وزارة التعليم العالي والبحث العلمي</p>
+                    <p>المدرسة العليا في علوم وتكنولوجيات الاعلام الالي والرقمنة -بجاية</p>
+                </div>
+    
+    
+            </div> -->
+<!-- 
+    :'w-[20%] border bg-gray-200 text-center'
+ -->
+
+
+ <!-- ____________________________________________________Head2______________________________________________________________ -->
+
+
+
+TAREK's garbage:
+
+<!-- {% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% tailwind_css %}
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
+      integrity="sha384-BJH7Fdq8+JAY9eBYBY8Ovh9gDAoS67E0b5z+ZuI1tkCTUKU0jO8ssIbLD8gVtUkG" 
+      crossorigin="anonymous"
+    >
+    <title>Set the months</title>
+  </head> -->
+
+ 

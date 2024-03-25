@@ -1,21 +1,6 @@
-{% load static tailwind_tags %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    {% tailwind_css %}
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
-    <link rel="stylesheet" 
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
-      integrity="sha384-BJH7Fdq8+JAY9eBYBY8Ovh9gDAoS67E0b5z+ZuI1tkCTUKU0jO8ssIbLD8gVtUkG" 
-      crossorigin="anonymous"
-    >
-    <title>Set the months</title>
-  </head>
+{% extends 'header.html' %}
+  {% block title %}Set the months{% endblock %}
+  {% block content %}
   <body class="p-5">
     <section class="p-10">
       <div class="flex flex-col items-center">
@@ -116,14 +101,45 @@
       >
       </div>
 
-      <div class="absolute left-0 right-0 top-0 bottom-0 bg-black bg-opacity-40 hidden
+      <div
+      class="absolute left-[50%] top-[50%] translate-x-[-50%] bg-white
+      translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+      animated-dialogue hidden"
+      id="reset-dialogue"
+      >
+        <div
+        class="w-full h-full flex flex-col items-center justify-between gap-10"
+        >
+          <h3 class="text-xl font-semibold text-center">
+            Voulez vous vraiment réinitialiser les données ?
+          </h3>
+          <div
+          class="flex flex-row justify-center items-center gap-10 w-full"
+          >
+            <button
+            class="text-blue-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="confirm-reset-btn"
+            type="button"
+            >
+              Oui
+            </button>
+            <button
+            class="text-red-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="cancel-reset-btn"
+            type="button"
+            >
+              Non
+            </button>
+        </div>
+      </div>
+
+      <div class="fixed left-0 right-0 top-0 bottom-0 bg-black bg-opacity-40 hidden
       animated-dialogue
       "
       id="dialogue-bg"
       ></div>
 
     </section>
-  </body>
   <style>
     .animated-dialogue {
       animation: fadeIn 0.5s ease-in-out;
@@ -148,6 +164,7 @@
     const saveBtn = document.querySelector('#save-btn')
     const redoBtn = document.querySelector('#redo-btn')
     const modifyBtn = document.querySelector('#modify-btn')
+    let isModifying = "{{ is_new }}" == "True"
     console.log(months)
     for (let i = 0; i < minusBtn.length; i++) {
       minusBtn[i].addEventListener('click', () => {
@@ -203,6 +220,7 @@
               dialogueBG.style.display = 'block'
               dialogueBG.addEventListener('click', () => {
                 document.getElementById('success-dialogue').style.display = 'none'
+                document.getElementById('save-dialogue').style.display = 'none'
                 dialogueBG.style.display = 'none'
               })
             }, 500)
@@ -218,9 +236,20 @@
     
   })
     redoBtn.addEventListener('click', () => {
-      window.location.reload()
+      document.getElementById('reset-dialogue').style.display = 'block'
+      document.getElementById('dialogue-bg').style.display = 'block'
+      const confirmResetBtn = document.getElementById('confirm-reset-btn')
+      const cancelResetBtn = document.getElementById('cancel-reset-btn')
+      confirmResetBtn.addEventListener('click', () => {
+        window.location.reload()
+      })
+      cancelResetBtn.addEventListener('click', () => {
+        document.getElementById('reset-dialogue').style.display = 'none'
+        document.getElementById('dialogue-bg').style.display = 'none'
+      })
     })
     
 
   </script>
-</html>
+</body>
+{% endblock %}
