@@ -46,7 +46,7 @@ def set_months(request,year):
             current_date = current_date.replace(day=1)
         else:
             for month in registered_months:
-                months.append((month.numMois, calendar.month_abbr[month.numMois]))
+                months.append((month.numMois, calendar.month_abbr[month.numMois],month.nbSemaines))
         context = {
             'year': year,
             'months': months,

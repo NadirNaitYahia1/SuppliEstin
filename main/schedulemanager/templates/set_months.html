@@ -29,6 +29,12 @@
               type="button"
             >
               <i class="fa fa-pen"></i>
+              <div
+                class="bg-yellow-100 border border-black absolute text-sm text-black top-4 right-3 px-1 hidden"
+                id="modify-text"
+              >
+                modifier
+              </div>
             </button>
             <button
               id="save-btn"
@@ -36,6 +42,12 @@
               type="button"
             >
               <i class="fas fa-save"></i>
+              <div
+                class="bg-yellow-100 border border-black absolute text-sm text-black top-4 right-3 px-1 hidden"
+                id="save-text"
+              >
+                sauvegarder
+              </div>
             </button>
             <button
               class="flex flex-row items-center gap-2 font-semibold text-gray-700 rounded-lg text-lg hover:text-blue-600 relative"
@@ -43,6 +55,12 @@
               type="button"
             >
               <i class="fas fa-redo-alt"></i>
+              <div
+                class="bg-yellow-100 border border-black absolute text-sm text-black top-4 right-3 px-1 hidden"
+                id="redo-text"
+              >
+                réinitialiser
+              </div>
             </button>
           </div>
         </div>
@@ -53,11 +71,17 @@
             >
               <h3 class="font-semibold text-blue-600" id="month">{{month.1}}:</h3>
               <div class="flex flex-row items-center gap-2">
-                <button class="text-gray-700" id="minus-btn" type="button">
+                <button class="text-black" id="minus-btn" type="button">
                   <i class="fas fa-minus"></i>
                 </button>
-                <p class="font-semibold" id="week-number">4</p>
-                <button class="text-gray-700" id="plus-btn" type="button">
+                <p class="font-semibold" id="week-number">
+                  {% if is_new %}
+                    4
+                  {% else %}
+                    {{month.2}}
+                  {% endif %}
+                </p>
+                <button class="text-black" id="plus-btn" type="button">
                   <i class="fas fa-plus"></i>
                 </button>
               </div>
@@ -94,43 +118,39 @@
         </div>
       </div>
 
+      <div
+      class="absolute left-[50%] top-[50%] translate-x-[-50%] bg-white
+      translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+      animated-dialogue hidden 
+      "
+      id="reset-dialogue"
+      >
+        <div class="w-full h-full flex flex-col items-center justify-between gap-10">
+          <h3 class="text-xl font-semibold text-center">Voulez vous vraiment annuler vos changements ?</h3>
+          <div class="flex flex-row justify-center items-center gap-10 w-full">
+            <button
+              class="text-blue-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+              id="confirm-reset-btn"
+              type="button"
+            >
+              Oui
+            </button>
+            <button
+              class="text-red-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+              id="cancel-reset-btn"
+              type="button"
+            >
+              Non
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="absolute left-[50%] top-[50%] translate-x-[-50%] bg-white
       translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
       animated-dialogue hidden"
       id="success-dialogue"
       >
-      </div>
-
-      <div
-      class="absolute left-[50%] top-[50%] translate-x-[-50%] bg-white
-      translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
-      animated-dialogue hidden"
-      id="reset-dialogue"
-      >
-        <div
-        class="w-full h-full flex flex-col items-center justify-between gap-10"
-        >
-          <h3 class="text-xl font-semibold text-center">
-            Voulez vous vraiment réinitialiser les données ?
-          </h3>
-          <div
-          class="flex flex-row justify-center items-center gap-10 w-full"
-          >
-            <button
-            class="text-blue-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
-            id="confirm-reset-btn"
-            type="button"
-            >
-              Oui
-            </button>
-            <button
-            class="text-red-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
-            id="cancel-reset-btn"
-            type="button"
-            >
-              Non
-            </button>
-        </div>
       </div>
 
       <div class="fixed left-0 right-0 top-0 bottom-0 bg-black bg-opacity-40 hidden
@@ -153,6 +173,10 @@
         opacity: 1;
       }
     }
+    .disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
   </style>
 
   <script>
@@ -164,11 +188,48 @@
     const saveBtn = document.querySelector('#save-btn')
     const redoBtn = document.querySelector('#redo-btn')
     const modifyBtn = document.querySelector('#modify-btn')
-    let isModifying = "{{ is_new }}" == "True"
-    console.log(months)
+    const isnNew = "{{ is_new }}" == "True"
+
+    let isMouseOverSaveBtn = false; 
+    let isMouseOverRedoBtn = false;
+    let isMouseOverModifyBtn = false;
+    saveBtn.addEventListener('mouseenter', () => {
+      isMouseOverSaveBtn = true;
+      setTimeout(() => {
+        if(isMouseOverSaveBtn) document.getElementById('save-text').classList.remove('hidden')
+      }, 500)
+    })
+    saveBtn.addEventListener('mouseleave', () => {
+      isMouseOverSaveBtn = false;
+      document.getElementById('save-text').classList.add('hidden')
+    })
+    redoBtn.addEventListener('mouseenter', () => {
+      isMouseOverRedoBtn = true;
+      setTimeout(() => {
+        if(isMouseOverRedoBtn) document.getElementById('redo-text').classList.remove('hidden')
+      }, 500)
+    })
+    redoBtn.addEventListener('mouseleave', () => {
+      isMouseOverRedoBtn = false;
+      document.getElementById('redo-text').classList.add('hidden')
+    })
+    modifyBtn.addEventListener('mouseenter', () => {
+      isMouseOverModifyBtn = true;
+      setTimeout(() => {
+        if(isMouseOverModifyBtn) document.getElementById('modify-text').classList.remove('hidden')
+      }, 500)
+    })
+    modifyBtn.addEventListener('mouseleave', () => {
+      isMouseOverModifyBtn = false;
+      document.getElementById('modify-text').classList.add('hidden')
+    })
+    let isModifying = isnNew
+    updateButtonStyles(isModifying)
+    console.log(isnNew)
     for (let i = 0; i < minusBtn.length; i++) {
+  
       minusBtn[i].addEventListener('click', () => {
-        if (weekNumbers[i].textContent > 0) {
+        if (weekNumbers[i].textContent > 0 && isModifying) {
           weekNumbers[i].textContent = parseInt(weekNumbers[i].textContent) - 1
         }
       })
@@ -176,14 +237,32 @@
 
     for (let i = 0; i < plusBtn.length; i++) {
       plusBtn[i].addEventListener('click', () => {
-        if (weekNumbers[i].textContent < 4) {
+        if (weekNumbers[i].textContent < 4 && isModifying) {
           weekNumbers[i].textContent = parseInt(weekNumbers[i].textContent) + 1
         }
       })
     }
+    function updateButtonStyles(isModifying) {
+      if (isModifying){
+        modifyBtn.classList.add('disabled')
+      } else {
+        modifyBtn.classList.remove('disabled')
+      }
+      for (let i = 0; i < minusBtn.length; i++) {
+          if (isModifying) {
+              minusBtn[i].classList.remove('disabled');
+              plusBtn[i].classList.remove('disabled');
+          } 
+          else {
+            minusBtn[i].classList.add('disabled');
+            plusBtn[i].classList.add('disabled');
+          }
+      }
+    }
 
     modifyBtn.addEventListener('click', () => {
       isModifying = true
+      updateButtonStyles(isModifying)
     })
 
     const data = []
