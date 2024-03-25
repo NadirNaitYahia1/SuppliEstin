@@ -9,6 +9,11 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     />
+    <link rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
+      integrity="sha384-BJH7Fdq8+JAY9eBYBY8Ovh9gDAoS67E0b5z+ZuI1tkCTUKU0jO8ssIbLD8gVtUkG" 
+      crossorigin="anonymous"
+    >
     <title>Set the months</title>
   </head>
   <body class="p-5">
@@ -35,46 +40,187 @@
           <div class="flex flex-row gap-5 items-center">
             <button
               class="flex flex-row items-center gap-2 font-semibold text-gray-700 rounded-lg text-lg hover:text-blue-600 relative"
+              id="modify-btn"
+              type="button"
             >
               <i class="fa fa-pen"></i>
             </button>
             <button
+              id="save-btn"
               class="flex flex-row items-center gap-2 font-semibold rounded-lg text-lg relative text-gray-700 hover:text-blue-600"
+              type="button"
             >
               <i class="fas fa-save"></i>
             </button>
             <button
               class="flex flex-row items-center gap-2 font-semibold text-gray-700 rounded-lg text-lg hover:text-blue-600 relative"
+              id="redo-btn"
+              type="button"
             >
               <i class="fas fa-redo-alt"></i>
             </button>
           </div>
         </div>
-
-        <div class="grid grid-cols-4 w-full mt-[40px] gap-x-10 gap-y-5">
-          {% for month in months %}
-          <div
-            class="w-[200px] border-2 border-gray-600 rounded-md px-5 py-3 grid grid-cols-2 gap-4 hover:border-black ease-in-out duration-300"
-          >
-            <h3 class="font-semibold text-blue-600">{{month.1}}: </h3>
-            <div class="flex flex-row items-center gap-2">
-              <div class="text-gray-700">
-                <i class="fas fa-minus"></i>
-              </div>
-              <p class="font-semibold">4</p>
-              <div class="text-gray-700">
-                <i class="fas fa-plus"></i>
+          <div class="grid grid-cols-4 w-full mt-[40px] gap-x-10 gap-y-5">
+            {% for month in months %}
+            <div
+              class="w-[200px] border-2 border-gray-600 rounded-md px-5 py-3 grid grid-cols-2 gap-4 hover:border-black ease-in-out duration-300"
+            >
+              <h3 class="font-semibold text-blue-600" id="month">{{month.1}}:</h3>
+              <div class="flex flex-row items-center gap-2">
+                <button class="text-gray-700" id="minus-btn" type="button">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <p class="font-semibold" id="week-number">4</p>
+                <button class="text-gray-700" id="plus-btn" type="button">
+                  <i class="fas fa-plus"></i>
+                </button>
               </div>
             </div>
+            {% endfor %}
           </div>
-          {% endfor %}
+      </div>
+
+      <div
+      class="absolute left-[50%] top-[50%] translate-x-[-50%] bg-white
+      translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+      animated-dialogue hidden 
+      "
+      id="save-dialogue"
+      >
+        <div class="w-full h-full flex flex-col items-center justify-between gap-10">
+          <h3 class="text-xl font-semibold text-center">Voulez vous vraiment sauvegarder vos changements ?</h3>
+          <div class="flex flex-row justify-center items-center gap-10 w-full">
+            <button
+              class="text-blue-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+              id="confirm-save-btn"
+              type="button"
+            >
+              Oui
+            </button>
+            <button
+              class="text-red-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+              id="cancel-save-btn"
+              type="button"
+            >
+              Non
+            </button>
+          </div>
         </div>
       </div>
+
+      <div class="absolute left-[50%] top-[50%] translate-x-[-50%] bg-white
+      translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+      animated-dialogue hidden"
+      id="success-dialogue"
+      >
+      </div>
+
+      <div class="absolute left-0 right-0 top-0 bottom-0 bg-black bg-opacity-40 hidden
+      animated-dialogue
+      "
+      id="dialogue-bg"
+      ></div>
+
     </section>
   </body>
+  <style>
+    .animated-dialogue {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
 
   <script>
-    const months = "{{ months }}"
+    const monthsDOM = document.querySelectorAll('#month')
+    const months = Array.from(monthsDOM).map(month => month.textContent.substring(0, 3))
+    const minusBtn = document.querySelectorAll('#minus-btn')
+    const plusBtn = document.querySelectorAll('#plus-btn')
+    const weekNumbers = document.querySelectorAll('#week-number')
+    const saveBtn = document.querySelector('#save-btn')
+    const redoBtn = document.querySelector('#redo-btn')
+    const modifyBtn = document.querySelector('#modify-btn')
     console.log(months)
+    for (let i = 0; i < minusBtn.length; i++) {
+      minusBtn[i].addEventListener('click', () => {
+        if (weekNumbers[i].textContent > 0) {
+          weekNumbers[i].textContent = parseInt(weekNumbers[i].textContent) - 1
+        }
+      })
+    }
+
+    for (let i = 0; i < plusBtn.length; i++) {
+      plusBtn[i].addEventListener('click', () => {
+        if (weekNumbers[i].textContent < 4) {
+          weekNumbers[i].textContent = parseInt(weekNumbers[i].textContent) + 1
+        }
+      })
+    }
+
+    modifyBtn.addEventListener('click', () => {
+      isModifying = true
+    })
+
+    const data = []
+    saveBtn.addEventListener('click', () => {
+      document.getElementById('save-dialogue').style.display = 'block'
+      document.getElementById('dialogue-bg').style.display = 'block'
+      const confirmSaveBtn = document.getElementById('confirm-save-btn')
+      const cancelSaveBtn = document.getElementById('cancel-save-btn')
+      confirmSaveBtn.addEventListener('click', () => {
+        for (let i = 0; i < months.length; i++) {
+          data.push({nomMois:months[i] , nbSemaines:parseInt(weekNumbers[i].textContent)})
+        }
+        fetch('', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: JSON.stringify({data: data})
+        })
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('save-dialogue').style.display = 'none'
+            document.getElementById('dialogue-bg').style.display = 'none'
+            setTimeout(() => {
+              document.getElementById('success-dialogue').style.display = 'block'
+              document.getElementById('success-dialogue').innerHTML = `
+                <h3 class="text-xl font-semibold text-center mb-10">${data.message}</h3>
+                <span class="text-[50px] text-green-500 w-full flex justify-center">
+                  <i class="fa fa-check"></i>
+                </span>
+              `
+              const dialogueBG = document.getElementById('dialogue-bg')
+              dialogueBG.style.display = 'block'
+              dialogueBG.addEventListener('click', () => {
+                document.getElementById('success-dialogue').style.display = 'none'
+                dialogueBG.style.display = 'none'
+              })
+            }, 500)
+          })
+          .catch(error => {
+            console.error('Err:', error)
+          })
+    })
+    cancelSaveBtn.addEventListener('click', () => {
+      document.getElementById('save-dialogue').style.display = 'none'
+      document.getElementById('dialogue-bg').style.display = 'none'
+    })
+    
+  })
+    redoBtn.addEventListener('click', () => {
+      window.location.reload()
+    })
+    
+
   </script>
 </html>

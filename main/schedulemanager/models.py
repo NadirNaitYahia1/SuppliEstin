@@ -533,25 +533,11 @@ def validate_url_list(value):
 
 # _____________________________________________________________ ADDED FOR SCHEDULE MANAGEMENT _____________________________________________________________
     
-MOIS = (
-    ('Jan', 'Janvier'),
-    ('Fev', 'Février'),
-    ('Mar', 'Mars'),
-    ('Avr', 'Avril'),
-    ('Mai', 'Mai'),
-    ('Juin', 'Juin'),
-    ('Juil', 'Juillet'),
-    ('Aout', 'Aout'),
-    ('Sep', 'Septembre'),
-    ('Oct', 'Octobre'),
-    ('Nov', 'Novembre'),
-    ('Dec', 'Décembre'),
-)
 
 class AdminMois(models.Model):
     idMois = models.AutoField(primary_key=True)
     numMois = models.IntegerField()
-    nomMois= models.CharField(max_length=20, choices=MOIS)
+    nomMois= models.CharField(max_length=20)
     nbSemaines = models.IntegerField()
     anneeUniv = models.ForeignKey('AnneeUniv', on_delete=models.CASCADE)
     isEditable = models.BooleanField(default=True) 
@@ -621,6 +607,7 @@ class Session(models.Model):
     typeSession = models.CharField(max_length=20, choices=SESSION_TYPE, default='Cours', null=True)
     idSeance    = models.AutoField(primary_key=True)
     idTabMois   = models.ForeignKey('TabMois', on_delete=models.CASCADE)
+    numSemaine  = models.IntegerField(default=1)
     Date        = models.DateField(null=True)
     heurDebut  = models.TimeField(null=True)
     heurFin    = models.TimeField(null=True)
