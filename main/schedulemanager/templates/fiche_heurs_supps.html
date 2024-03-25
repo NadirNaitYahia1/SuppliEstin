@@ -1,26 +1,212 @@
 {% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        {% tailwind_css %}
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-        />
-        <title></title>
-      </head>
-<body>
-    <div class="flex items-center mb-3">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Color Change Example</title>
+    {% tailwind_css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
+</head>
+<body >
+
+<!-- _______________________________________btn for changing between permanant and vacataire ______________________________________________ -->
+    <div class="flex items-center mb-3 mt-3 ms-2">
         <p>Enseignant</p>
-        
-        <button class="border-2 bg-current rounded-md bg-red">
-            Permanant 
+        <button class="btn1 bg-blue-950 rounded-md p-2 text-white mx-2">
+            Permanant
         </button>
+        <button class="btn2 bg-blue-300 rounded-md p-2 text-white mx-2">
+            Vacataire
+        </button>
+    </div>
+<!-- ___________________________________________________________Head1____________________________________________________________________________ -->
+    <div class='mx-auto w-[90%]  border '>
+            <div >
+                <p  class="text-center">الجمهوريــة الجزائريــة الديمقراطيــة الشعبيــة</p>
+                <p  class="text-center">Republique Algérienne Démocratique et Populaire</p>
+            </div>
+            
+            <div class="flex justify-between items-center  ">
+               <div class="title-2 w-[30%]">
+                    <p>Ministère de l'Enseignement Supérieur et de la Recherche Scientifique</p>
+                    <p>École supérieure en Sciences et Technologies de l'Informatique et du Numérique -Bejaia-</p>
+                </div>
+               
+                <div class="logo-1 h-[10%] w-[15%]">
+                    <img src="{% static '../static/estin.png' %}"  alt="logo" />
+                </div>
+                
+                <div class="title-2 w-[30%]">
+                    <p>وزارة التعليم العالي والبحث العلمي</p>
+                    <p>المدرسة العليا في علوم وتكنولوجيات الاعلام الالي والرقمنة -بجاية</p>
+                </div>
+    
+    
+            </div>
+<!-- 
+    :'w-[20%] border bg-gray-200 text-center'
+ -->
+
+
+ <!-- ____________________________________________________Head2______________________________________________________________ -->
+     
+        <div class='flex items-center mt-3'>
+            <p class=' w-[20%]'>Ref N:
+                <input  placeholder='  ....... ' class='w-[20%] border text-center' ></input> ESTIN/2023
+            </p>
+
+            <div class="items-center">   
+                <button class='ms-2'  >
+                    <i class="fa-solid fa-pen"></i>                    
+                </button>
+              
+                <button class='ms-2' >
+                    <i class="fa-solid fa-floppy-disk"></i>
+                </button>
+           
+            </div>
+        </div>
+           
+        <div class='mt-3'>
+            <p class="text-center">
+                Etat de service des heures complementaires <br/> Enseignants {% if type == 'permanant' %} Permanants {% else %} Vacataires {% endif %}  
+            </p>
+        </div>
+      
+
+
+
+<!-- ________________________________________________________update print ..._____________________________________________________________ -->
+     
+        <div class='flex items-center justify-between mx-4 mb-2'>
+            <div class='flex items-center'>
+                <p>Mois:</p>
+                
+                <button>
+                    <i class="fa-solid fa-caret-left"></i>
+                </button>                            
+                
+                <span class='font-bold text-lg'>{{ month }}</span>
+                
+                <button>
+                    <i class="fa-solid fa-caret-right"></i>
+                </button> 
+            </div>
+
+                <div class='icons '>
+                        <button  class="font-semibold text-gray-700 rounded-lg text-lg hover:text-blue-600 relative"  >
+                            <i class="fa-solid fa-pen"></i>
+                                <!-- <div class="bg-yellow-100 p-1 absolute top-4 right-7 -mt-2 -mr-2 transition-all duration-300 ease-in-out border border-black text-sm text-black font-medium">
+                                    modifier
+                                </div> -->
+                        </button>
+                
+
+                            <button>
+                            <i class="fa-solid fa-floppy-disk"></i>
+                                <!-- <div class="bg-yellow-100 p-1 absolute top-4 right-7 -mt-2 -mr-2 transition-all duration-300 ease-in-out border border-black text-sm text-black font-medium">
+                                    sauvegarder
+                                </div> -->
+                            </button>
+
+                        <button class='mx-2'  > 
+                            <i class="fa-solid fa-print"></i>                    
+                        </button>                    
+                        
+                        <button > 
+                            <i class="fa-solid fa-download"></i>                    
+                        </button>                    
+                </div>
+        </div>
+       
+
+    
+    
+    
+                <table class="w-full border mx-auto">
+                    <thead class='text-col-3'>
+                        <tr>
+                            <th>N°</th>
+                            <th>Nom & prénom</th>
+                            <th>Grade</th>
+                            <th>Module Enseigné</th>
+                            <th>Volume horaire autorisé</th>
+                            <th>Nombre de semaines</th>
+                            <th>Nombre d'heures Mensuelles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prof in profs %}
+                            <tr>
+                                <td class="text-center">5</td>  
+                                <td class="text-center">{{ prof.nom }} {{ prof.prenom }}</td>
+                                <td class="text-center">{{ prof.grade }}</td>
+                                <td class="text-center">{{ prof.module_enseigne }}</td>
+                                <td class="text-center">{{ prof.volume_horaire_autorise }}</td>
+                                <td class="text-center">{{ prof.nombre_de_semaines }}</td>
+                                <td class="text-center">{{ prof.nombre_d_heures_mensuelles }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+  
+    
+
 
     </div>
+
+
+
+   
+
+
+
+
+
+
+
+
+
+<script>
+    const button1 = document.querySelector(".btn1");
+    const button2 = document.querySelector(".btn2");
+
+    function changeColor(numButton) {
+        let type;
+        if (numButton === 1) {
+            type = "permanant";
+            button1.classList.remove('bg-blue-300');
+            button1.classList.add('bg-blue-950');
+            button2.classList.remove('bg-blue-950');
+            button2.classList.add('bg-blue-300');
+        } else {
+            type = "vaccataire";
+            button2.classList.remove('bg-blue-300');
+            button2.classList.add('bg-blue-950');
+            button1.classList.remove('bg-blue-950');
+            button1.classList.add('bg-blue-300');
+        }
+ 
+        const url = `/fiche-heurs-supps/${type}/<str:year>/<str:month>/`;
+   
+        window.location.href = url;
+    }
+
+    button1.addEventListener("click", function() {
+        changeColor(1);
+    });
+    button2.addEventListener("click", function() {
+        changeColor(2);
+    });
+
+
+
+
+
+</script>
 
 </body>
 </html>
