@@ -1,11 +1,197 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Heures supplémentaires pour un seul enseignant</h1>
-</body>
-</html>
+{% extends "header.html" %} {% block title %}Heures supplémentaires pour un seul
+enseignant{% endblock %} {% block content %}
+<section class="grid grid-cols-2 gap-[50px] px-[5%]">
+  <div class="w-full p-5 col-span-1 grid grid-cols-2 gap-x-[30px] gap-y-[10px]">
+    <h3>Departement:</h3>
+    <div class="w-full border border-gray-300 flex items-center justify-center">
+        Informatique
+    </div>
+    <h3>Nom et prénom:</h3>
+    <div class="w-full border border-gray-300 flex items-center justify-center">
+        {{ nom_enseignant }} {{ prenom_enseignant }}
+    </div>
+    <h3>Status:</h3>
+    <div class="w-full border border-gray-300 flex items-center justify-center">
+        {% if statut_enseignant == "V" %}
+        Vacataire
+        {% else %}
+        Permanent
+        {% endif %}
+    </div>
+    <h3>Grade:</h3>
+    <div class="w-full border border-gray-300 flex items-center justify-center">
+        {{ grade_enseignant }}
+    </div>
+  </div>
+
+  <div class="w-full px-[50px] py-[30px] flex items-center justify-center">
+    <div
+    class="w-[80%] p-6 my-auto border-double border-black border-4 mx-auto rounded-lg flex flex-col justify-center items-center"
+    >
+        <p>Fiche de Suivi des Heures Supplimentaire</p>
+        <p>Mois: <span class="font-semibold">{{ month }}</span></p>  
+    </div>
+  </div>
+</section>
+
+<div class="flex justify-end px-[5%] w-full text-xl gap-8 text-gray-700">
+    <button id="reset-btn">
+        <i class="fas fa-redo-alt"></i>
+    </button>
+    <button id="save-btn">
+        <i class="fas fa-save"></i>
+    </button>
+    <button id="submit-btn">
+        <i class="fa-solid fa-paper-plane"></i>
+    </button>
+    <button id="print-btn">
+        <i class="fa-solid fa-print"></i>
+    </button>
+    <button id="print-download">
+        <i class="fa-solid fa-download"></i>
+    </button>
+</div>
+
+<section class="px-[5%] felx flex-col items-center gap-[50px] pb-[100px]">
+    {% for semaine in semaines %}
+        <div class="flex flex-col items-center my-10 gap-4" id="semaine-container">
+            <div class="w-full flex justify-center">
+                <h2 class="font-bold text-blue-600 text-xl">Semaine {{ semaine.numSemaine }}</h2>
+            </div>
+            <div class="w-full flex justify-end items-center gap-3 text-gray-700 text-xl">
+                <button id="delete-btn{{semaine.numSemaine}}">
+                    <i class="fa-solid fa-delete-left"></i>
+                </button>
+                <button id="add-btn{{semaine.numSemaine}}">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="w-full flex flex-col border border-gray-600 gap-[2px] relative" id="semaines-list{{semaine.numSemaine}}">
+                <div class="grid grid-cols-5 gap-x-[2px] font-bold">
+                    <div class="flex items-center justify-center py-[2px]">Date</div>
+                    <div class="flex items-center justify-center py-[2px]">Heure de début</div>
+                    <div class="flex items-center justify-center py-[2px]">Heure de fin</div>
+                    <div class="flex items-center justify-center py-[2px]">Type séance</div>
+                    <div class="flex items-center justify-center py-[2px]">Nombre d'heurs</div>
+                </div>
+                {% for session in semaine.sessions %}
+                    <div class="grid grid-cols-5 gap-x-[2px] font-semibold">
+                        <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.1}}</div>
+                        <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.2}}</div>
+                        <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.3}}</div>
+                        <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.4}}</div>
+                        <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.5}}h {{session.6}}min</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</section>
+<script>
+    const nbSemaines = parseInt("{{ nbSemaines }}");
+    const newSessions = [];
+    for (let i = 1; i <= nbSemaines; i++) {
+        newSessions.push([]);
+    }
+    for (let i = 1; i <= nbSemaines; i++) {
+        document.getElementById(`add-btn${i}`).addEventListener("click", () => {
+            disableAddBtns();
+            const semainesList = document.getElementById(`semaines-list${i}`);
+            semainesList.innerHTML += `
+                <div class="grid grid-cols-5 gap-x-[2px] font-semibold relative" id="new-session-form">
+                    <p class="hidden" id='new-nb-semaine'>${i-1}</p>
+                    <input class="flex items-center justify-center py-[2px] bg-green-200 border-none" type='date' id='new-session-date'/>
+                    <input class="flex items-center justify-center py-[2px] bg-green-200 border-none" type='time' id='new-session-start'/>
+                    <input class="flex items-center justify-center py-[2px] bg-green-200 border-none" type='time' id='new-session-end'/>
+                    <select class="flex items-center justify-center py-[2px] bg-green-200 border-none text-center" id='new-session-type'>
+                        <option value="Cours">Cours</option>
+                        <option value="TD">TD</option>
+                        <option value="TP">TP</option>
+                        <option value="Examen">Examen</option>
+                    </select>
+                    <div class="flex items-center justify-center py-[2px] bg-green-200 relative" id='new-session-heurs'>
+                        
+                        <button class="absolute right-4 text-blue-700" id="save-new-session">
+                            <i class="fa-regular fa-bookmark"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="absolute bottom-[-30px] text-sm font-medium text-red-500 hidden" id="new-session-alert">
+                    Remplissez tous les champs s'il vous plait !
+                </p>
+                `
+            
+            const saveNewSessionBtn = document.getElementById("save-new-session");
+            document.getElementById("new-session-date").addEventListener("input", () => {
+                    disableAlertFieldsEmpty();
+                });
+                document.getElementById("new-session-start").addEventListener("input", () => {
+                    disableAlertFieldsEmpty();
+                });
+                document.getElementById("new-session-end").addEventListener("input", () => {
+                    disableAlertFieldsEmpty();
+                });
+            saveNewSessionBtn.addEventListener("click", () => {
+                if (document.getElementById("new-session-date").value === "" || document.getElementById("new-session-start").value === "" || document.getElementById("new-session-end").value === "") {
+                    alertFieldsEmpty();
+                    return;
+                }
+                const date = document.getElementById("new-session-date").value;
+                const start = document.getElementById("new-session-start").value;
+                const end = document.getElementById("new-session-end").value;
+                const type = document.getElementById("new-session-type").value;
+                const heurs = document.getElementById("new-session-heurs").innerText;
+                const semaine = parseInt(document.getElementById("new-nb-semaine").innerText)
+                newSessions[semaine].push({date:date, start:start, end:end, type:type, heurs:heurs});
+                document.getElementById("new-session-form").remove();
+                enableAddBtns();
+                semainesList.innerHTML += `
+                <div class="grid grid-cols-5 gap-x-[2px] font-semibold" id="add-session-${semaine}-${newSessions.length-1}">
+                    <div class="flex items-center justify-center py-[2px] bg-blue-200">${date}</div>
+                    <div class="flex items-center justify-center py-[2px] bg-blue-200">${start}</div>
+                    <div class="flex items-center justify-center py-[2px] bg-blue-200">${end}</div>
+                    <div class="flex items-center justify-center py-[2px] bg-blue-200">${type}</div>
+                    <div class="flex items-center justify-center py-[2px] bg-blue-200">1h 8min</div>
+                </div>
+                `
+                console.log(newSessions);
+            });
+        });
+    }
+
+    function alertFieldsEmpty() {
+        document.getElementById("new-session-alert").classList.remove("hidden");
+        document.getElementById("save-new-session").classList.add("hidden");
+        const children = document.getElementById("new-session-form").children;
+        for (let i = 0; i < children.length; i++) {
+            children[i].classList.add("bg-red-200");
+        }
+    }
+
+    function disableAlertFieldsEmpty() {
+        document.getElementById("new-session-alert").classList.add("hidden");
+        document.getElementById("save-new-session").classList.remove("hidden");
+        const children = document.getElementById("new-session-form").children;
+        for (let i = 0; i < children.length; i++) {
+            children[i].classList.remove("bg-red-200");
+        }
+    }
+
+    function disableAddBtns() {
+        for (let i = 1; i <= nbSemaines; i++) {
+            const btn = document.getElementById(`add-btn${i}`);
+            btn.disabled = true;
+            btn.classList.add("text-gray-300");
+        }
+    }
+    function enableAddBtns() {
+        for (let i = 1; i <= nbSemaines; i++) {
+            const btn = document.getElementById(`add-btn${i}`)
+            btn.disabled = false;
+            btn.classList.remove("text-gray-300");
+        }
+    }
+</script>
+{% endblock %}
+
+
