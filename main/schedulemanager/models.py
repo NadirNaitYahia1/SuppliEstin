@@ -565,8 +565,14 @@ class AdminMois(models.Model):
     
     def get_nb_semaine_mois_annee(nomMois,annee):
         print('model: ')
-        objAdminMois = AdminMois.objects.filter(nomMois=nomMois, anneeUniv=annee)
+        try: 
+            objAdminMois = AdminMois.objects.filter(nomMois=nomMois, anneeUniv=annee)
+        except AdminMois.DoesNotExist:
+            objAdminMois = None
+            print('nnn')
         return objAdminMois
+    def get_months_anneeUnivs() :
+        return AdminMois.objects.all()
 
 # class VolumeAutorise(models.Model):
 #     idEnseignant  = models.ForeignKey('Enseignant', on_delete=models.CASCADE)

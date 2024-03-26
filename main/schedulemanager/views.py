@@ -66,6 +66,10 @@ def get_list_heurs_supps_enseignants(profs, idAdminMois):
     return TabMois.get_heursSupps(profs, idAdminMois) 
 
 
+def get_months_anneeUnivs( ):
+    return AdminMois.get_months_anneeUnivs()
+
+
 def fiche_heurs_supps(request, type, year, month):
     list = []
     if type[0:1].upper() in ['V', 'P']:
@@ -80,6 +84,16 @@ def fiche_heurs_supps(request, type, year, month):
             idMois = objAdminMois[0].idMois
             listHeurSupps = get_list_heurs_supps_enseignants(listEnseignants, idMois)  
 
+
+
+            listMoisAnnee = get_months_anneeUnivs()
+            anneeUnniv =[]
+
+            for item in listMoisAnnee:
+                moisAnnee = [item.nomMois for item in listMoisAnnee if item.anneeUniv.annee_univ == item.anneeUniv.annee_univ]
+                moisAnneetries = sorted(moisAnnee)
+                anneeUnniv.append([item.anneeUniv.annee_univ,moisAnneetries ])
+            print('agenda',anneeUnniv)
 
             print('listHeurSupps',listHeurSupps) 
     
@@ -110,6 +124,7 @@ def fiche_heurs_supps(request, type, year, month):
                 'year': year,
                 'month': month,
                 'list': list,
+                'anneeUnniv':   anneeUnniv ,
                 'nbSemainesMonthYear': nbSemainesMonthYear,
         
             }
