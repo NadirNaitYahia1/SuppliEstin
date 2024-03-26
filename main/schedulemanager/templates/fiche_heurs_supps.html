@@ -31,28 +31,36 @@
 <!-- ________________________________________________________update print ..._____________________________________________________________ -->
      
         <div class='flex items-center justify-between mx-4 mb-2'>
-            <div class='flex items-center'>
-                <p>Mois:</p>
-                
-                <button>
-                    <i class="fa-solid fa-caret-left"></i>
-                </button>                            
-                
-                <!-- Boucle pour afficher chaque année universitaire et les mois correspondants -->
-                {% for annee, mois in anneeUnniv %}
-                    <span class='font-bold text-lg'>{{ annee }}</span>
-                    <ul>
-                        <!-- Boucle pour afficher chaque mois -->
-                        {% for m in mois %}
-                            <li>{{ m }}</li>
+            <form method="GET" >
+                <div class='flex items-center'>
+                    <!-- <p>Mois:</p> -->
+                    
+                    <!-- <button type="submit" name="prev_month">
+                        <i class="fa-solid fa-caret-left"></i>
+                    </button> -->
+                    
+                    <!-- Liste déroulante pour les années -->
+                    <select name="selected_year" class="border-none">
+                        {% for annee, mois in anneeUnniv %}
+                            <option value="{{ annee }}">{{ annee }}</option>
                         {% endfor %}
-                    </ul>
-                {% endfor %}
-                
-                <button>
-                    <i class="fa-solid fa-caret-right"></i>
-                </button> 
-            </div>
+                    </select>
+                    
+                    <!-- Liste déroulante pour les mois -->
+                    <select name="selected_month" class="border-none">
+                        {% for annee, mois in anneeUnniv %}
+                            {% for m in mois %}
+                                <option value="{{ m }}-{{ annee }}" >{{ m }}-{{ annee }}</option>
+                            {% endfor %}
+                        {% endfor %}
+                    </select>
+                    
+                    <!-- <button type="submit" name="next_month">
+                        <i class="fa-solid fa-caret-right"></i>
+                    </button>  -->
+                </div>
+            </form>
+       
             
 
                 <div class='icons '>

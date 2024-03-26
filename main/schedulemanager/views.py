@@ -90,9 +90,11 @@ def fiche_heurs_supps(request, type, year, month):
             anneeUnniv =[]
 
             for item in listMoisAnnee:
-                moisAnnee = [item.nomMois for item in listMoisAnnee if item.anneeUniv.annee_univ == item.anneeUniv.annee_univ]
-                moisAnneetries = sorted(moisAnnee)
-                anneeUnniv.append([item.anneeUniv.annee_univ,moisAnneetries ])
+                if item.anneeUniv.annee_univ not in [annee[0] for annee in anneeUnniv]:
+                    mois_annee = [mois_item.nomMois for mois_item in listMoisAnnee if mois_item.anneeUniv.annee_univ == item.anneeUniv.annee_univ]
+                    anneeUnniv.append([item.anneeUniv.annee_univ, mois_annee])
+
+                    
             print('agenda',anneeUnniv)
 
             print('listHeurSupps',listHeurSupps) 
