@@ -85,15 +85,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for prof in profs %}
+                        {% for item in list %}
                             <tr>
-                                <td class="text-center">5</td>  
-                                <td class="text-center">{{ prof.nom }} {{ prof.prenom }}</td>
-                                <td class="text-center">{{ prof.grade }}</td>
-                                <td class="text-center">{{ prof.module_enseigne }}</td>
-                                <td class="text-center">{{ prof.volume_horaire_autorise }}</td>
-                                <td class="text-center">{{ prof.nombre_de_semaines }}</td>
-                                <td class="text-center">{{ prof.nombre_d_heures_mensuelles }}</td>
+                                <td class="text-center">{{ item.index }}</td>  
+                                <td class="text-center">{{ item.nom }} {{ item.prenom }}</td>
+                                <td class="text-center">{{ item.grade }}</td>
+                                <td class="text-center">{{ item.module_enseigne }}</td>
+                                <td class="text-center">{{ item.volumeAutorise }}</td>
+                                <td class="text-center">{{ item.nbSemaine }}</td>
+                                <td class="text-center">{{ item.heursSupps }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>

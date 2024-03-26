@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import AnneeUniv, AdminMois,Enseignant
+from .models import AnneeUniv, AdminMois,Enseignant,TabMois
 import calendar
 from datetime import datetime, timedelta
 from django.http import JsonResponse
@@ -55,24 +55,78 @@ def set_months(request,year):
         return render(request, 'set_months.html',context)
 # ____________________________________________________________________________________________________________________________________
 
-def fiche_heurs_supps(request, type,year, month):
-    print(type[0:1])
-    if type[0:1].upper() in ['V','P']:
-        profs = Enseignant.get_profs(type[0:1].upper())
+
+def get_list_enseignants(typeEnseignant):
+    return Enseignant.get_profs(typeEnseignant )
+
+def get_list_nb_semaines_mois_annee(year, month):
+    return AdminMois.get_nb_semaine_mois_annee(month, year)
+
+def get_list_heurs_supps_enseignants(profs, idAdminMois):
+    return TabMois.get_heursSupps(profs, idAdminMois) 
+
+
+def fiche_heurs_supps(request, type, year, month):
+    list = []
+    if type[0:1].upper() in ['V', 'P']:
+        
+        listEnseignants = get_list_enseignants(type[0:1].upper())
+
+        if listEnseignants:
+
+            objAdminMois = get_list_nb_semaines_mois_annee(year, month)
+            nbSemainesMonthYear = objAdminMois[0].nbSemaines
+
+            idMois = objAdminMois[0].idMois
+            listHeurSupps = get_list_heurs_supps_enseignants(listEnseignants, idMois)  
+
+
+            print('listHeurSupps',listHeurSupps) 
+    
+
+            for prof in listEnseignants:
+                item = {}
+                item['nom'] = prof.nom
+                item['prenom'] = prof.prenom
+                item['grade'] = prof.grade
+                item['volumeAutorise'] = prof.VolumeAutorise
+                item['nbSemaine'] = nbSemainesMonthYear
+                if listHeurSupps:
+                    for heurSupp in listHeurSupps:
+                        if heurSupp[0].idEnseignat.matricule == prof.matricule:
+                            item['heursSupps'] = heurSupp[0].heursSupps
+                        else:
+                            item['heursSupps'] = 0
+                    list.append(item)
+                else:
+                    item['heursSupps'] = 0
+                    list.append(item)
+            print(list)
+
+
+
+            context = {
+                'type': type, 
+                'year': year,
+                'month': month,
+                'list': list,
+                'nbSemainesMonthYear': nbSemainesMonthYear,
+        
+            }
+            print('context',context["nbSemainesMonthYear"])
+            return render(request, 'fiche_heurs_supps.html', context)
     else:   
         return render(request, '404.html')
+        
+        
     
-    for prof in profs:
-        print(prof.grade)
+         
 
-    context = {
-        'type': type, # 'vacataires' or 'permanent
-        'year': year,
-        'month': month,
-        'profs': profs,
-    
-    }
-    return render(request, 'fiche_heurs_supps.html', context)
+
+
+# _______________________________________________________________________________________________________
+
+
 
 def fiche_heurs_supps_enseignant(request, enseignant, year, month):
     return render(request, 'fiche_heurs_supps_enseignant.html')

@@ -562,10 +562,24 @@ class AdminMois(models.Model):
         if self.nbSemaines < 1 or self.nbSemaines > 4:
             raise ValidationError("Le nombre de semaines doit être compris entre 1 et 4")
         super().save(*args, **kwargs)
+    
+    def get_nb_semaine_mois_annee(nomMois,annee):
+        print('model: ')
+        objAdminMois = AdminMois.objects.filter(nomMois=nomMois, anneeUniv=annee)
+        return objAdminMois
 
-class VolumeAutorise(models.Model):
-    idEnseignant  = models.ForeignKey('Enseignant', on_delete=models.CASCADE)
-    VolumeHoraireAutorise = models.IntegerField()
+# class VolumeAutorise(models.Model):
+#     idEnseignant  = models.ForeignKey('Enseignant', on_delete=models.CASCADE)
+#     VolumeHoraireAutorise = models.IntegerField()
+    
+#     def get_volume_autorise_prof(matricules):
+#         listProf = []
+#         print(idEnseignants)
+#         for idEnseignant in idEnseignants:
+#             volume = VolumeAutorise.objects.get(idEnseignant=matrciule)
+#             listProf.append({volume.idEnseignant: volume.VolumeHoraireAutorise})
+#         return listProf
+
 
 
 class TabMois(models.Model):
@@ -593,6 +607,15 @@ class TabMois(models.Model):
         if self.minutesSupps < 0 or self.minutesSupps > 59:
             raise ValidationError("Le nombre de minutes supplémentaires doit être compris entre 0 et 59")
         super().save(*args, **kwargs)
+
+
+    def get_heursSupps(idEnseignants, idMois):
+        arr =[]
+        for idEnseignant in idEnseignants:
+            item = TabMois.objects.filter(idEnseignat=idEnseignant, idMois=idMois)
+            if item : 
+                arr.append(item)
+        return arr
 
 SESSION_TYPE = (
     ('Cours', 'Cours'),
@@ -635,6 +658,7 @@ class Session(models.Model):
         if self.minutes < 0 or self.minutes > 59:
             raise ValidationError("Le nombre de minutes doit être compris entre 0 et 59")
         super().save(*args, **kwargs)
+ 
 
 # ________________________________________________________________________________________________________________________________________________________
 
@@ -665,7 +689,17 @@ class Enseignant(models.Model):
     date_embauche=models.DateField(null=True, blank=True,verbose_name="Date d'embauche")
     matricule=models.CharField(max_length=20, null=True, blank=True)
     organisme=models.ForeignKey('Organisme', on_delete=models.SET_NULL, null=True, blank=True, related_name='enseignants', verbose_name="Laboratoire/service/..")
-    
+# __________________________________________________________________________________________________
+
+#   added for schedule management:  
+    VolumeAutorise = models.IntegerField(null=True, blank=True)
+
+    def get_profs(statuDuProf):
+        if statuDuProf in ['P', 'V']:
+            return Enseignant.objects.filter(statut=statuDuProf)
+        else:
+            raise ValueError("Statut du professeur non valide")
+# __________________________________________________________________________________________________
     @transaction.atomic
     def set_otp(self):
         self.otp=str(randint(100000,999999))
@@ -735,11 +769,7 @@ class Enseignant(models.Model):
     def __str__(self):
         return f"{self.nom} {self.prenom}"
 
-    def get_profs(statuDuProf):
-        if statuDuProf in ['P', 'V']:
-            return Enseignant.objects.filter(statut=statuDuProf)
-        else:
-            raise ValueError("Statut du professeur non valide")
+
 
     
 
