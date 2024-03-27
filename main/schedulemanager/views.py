@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import AnneeUniv, AdminMois,Enseignant,TabMois,Session
 import calendar
 from datetime import datetime, timedelta
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 import json
 
 # Create your views here.
@@ -94,7 +94,7 @@ def fiche_heurs_supps(request, type, year, month):
                     mois_annee = [mois_item.nomMois for mois_item in listMoisAnnee if mois_item.anneeUniv.annee_univ == item.anneeUniv.annee_univ]
                     anneeUnniv.append([item.anneeUniv.annee_univ, mois_annee])
 
-                    
+
             print('agenda',anneeUnniv)
 
             print('listHeurSupps',listHeurSupps) 
@@ -133,8 +133,8 @@ def fiche_heurs_supps(request, type, year, month):
             print('context',context["nbSemainesMonthYear"])
             return render(request, 'fiche_heurs_supps.html', context)
     else:   
-        return render(request, '404.html')
-        
+        return HttpResponse('Type de professeur non valide : V pour vacataire et P pour permanent')
+
         
     
          

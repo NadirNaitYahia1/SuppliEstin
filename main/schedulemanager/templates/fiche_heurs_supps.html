@@ -60,7 +60,54 @@
                     </button>  -->
                 </div>
             </form>
-       
+            <script>
+                const selectYear = document.querySelector('select[name="selected_year"]');
+                const selectMonth = document.querySelector('select[name="selected_month"]');
+            
+                
+                selectYear.addEventListener('change', function() {
+                    const selectedYear = selectYear.value;
+            
+            
+                    for (let i = 0; i < selectMonth.options.length; i++) {
+                        const option = selectMonth.options[i];
+                        const [month, year] = option.value.split('-');
+            
+                      
+                        if (year === selectedYear) {
+                            option.style.display = 'block'; 
+                        } else {
+                            option.style.display = 'none';  
+                        }
+                    }
+                    // new year :
+                    if (selectedYear === "{{ year }}") {
+                        selectMonth.value = "{{ month }}-{{ year }}";
+                    } else {
+                        selectMonth.value = '';
+                    }
+                });
+      
+
+                selectMonth.addEventListener('change', function() {
+                    const selectedYear = selectYear.value;
+                    const selectedMonth = selectMonth.value.split('-')[0];
+                    console.log(selectedYear, selectedMonth)
+                    // selectMonth.value = selectedMonth
+                    const url = `/fiche-heurs-supps/{{ type }}/${selectedYear}/${selectedMonth}/`;
+                    window.location.href = url;
+                });
+            
+                // Définir les valeurs sélectionnées au chargement de la page
+                selectYear.value = "{{ year }}";
+                selectMonth.value = "{{ month }}-{{ year }}";
+            
+                // Déclencher l'événement 'change' pour mettre à jour les options de mois au chargement de la page
+                selectYear.dispatchEvent(new Event('change'));
+            </script>
+            
+
+            
             
 
                 <div class='icons '>
