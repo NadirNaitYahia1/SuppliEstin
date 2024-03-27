@@ -1,9 +1,9 @@
 {% extends 'header.html' %}
 
-{% block title %}Button Color Change Example{% endblock %}
+{% block title %}{% endblock %}
 
 {% block content %}
- <body class="mx-auto w-[90%] border">
+ <body class="mx-auto w-[90%] border mb-10">
     <div>
         <div class='flex items-center mt-3'>
             <p class=' w-[20%]'>Ref N:
@@ -175,47 +175,79 @@
 
             }
         </style>
-        <script>
-            const printButton = document.querySelector('button[name="print"]');
-            const downloadButton = document.querySelector('button[name="download"]');
-            printButton.addEventListener('click', function() {
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const printButton = document.querySelector('button[name="print"]');
 
-                 print();
-            });
-         
+        printButton.addEventListener('click', function() {
+            const tableContainer = document.getElementById("table-container");
+            const teacherTable = document.getElementById("teacher-table");
+            tableContainer.classList.remove("scrollable-table");
+            teacherTable.classList.remove("table-container");
+            print();
+
+            // Après l'impression, rétablissez les classes pour restaurer la fonctionnalité de défilement
+            setTimeout(function() {
+                tableContainer.classList.add("scrollable-table");
+                teacherTable.classList.add("table-container");
+            }, 500); // Attendez 500 millisecondes pour que l'impression se termine avant de rétablir les classes
+        });
+    });
+</script>
 
 
-        </script>
+<div id="table-container" class="table-container  mb-8">
+    <table class="w-full border mx-auto " id="teacher-table">
+        <thead class='text-col-3 '>
+            <tr>
+                <th>N°</th>
+                <th>Nom & prénom</th>
+                <th>Grade</th>
+                <th>Module Enseigné</th>
+                <th>Volume horaire autorisé</th>
+                <th>Nombre de semaines</th>
+                <th>Nombre d'heures Mensuelles</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in list %}
+                <tr>
+                    <td class="text-center">{{ item.index }}</td>  
+                    <td class="text-center">{{ item.nom }} {{ item.prenom }}</td>
+                    <td class="text-center">{{ item.grade }}</td>
+                    <td class="text-center">{{ item.module_enseigne }}</td>
+                    <td class="text-center">{{ item.volumeAutorise }}</td>
+                    <td class="text-center">{{ item.nbSemaine }}</td>
+                    <td class="text-center">{{ item.heursSupps }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .scrollable-table {
+    max-height: 400px; /* Définissez ici la taille limite */
+    overflow-y: auto; /* Définissez "auto" pour activer la barre de défilement verticale automatiquement lorsque le contenu dépasse */
+}
+
+</style>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    const teacherTable = document.getElementById("teacher-table");
+    const tableContainer = document.getElementById("table-container");
+    
+    if (teacherTable.rows.length > 10) {
+        tableContainer.classList.add("scrollable-table");
+    }
+});
+
+</script>
+
  
-                <table class="w-full border mx-auto">
-                    <thead class='text-col-3'>
-                        <tr>
-                            <th>N°</th>
-                            <th>Nom & prénom</th>
-                            <th>Grade</th>
-                            <th>Module Enseigné</th>
-                            <th>Volume horaire autorisé</th>
-                            <th>Nombre de semaines</th>
-                            <th>Nombre d'heures Mensuelles</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in list %}
-                            <tr>
-                                <td class="text-center">{{ item.index }}</td>  
-                                <td class="text-center">{{ item.nom }} {{ item.prenom }}</td>
-                                <td class="text-center">{{ item.grade }}</td>
-                                <td class="text-center">{{ item.module_enseigne }}</td>
-                                <td class="text-center">{{ item.volumeAutorise }}</td>
-                                <td class="text-center">{{ item.nbSemaine }}</td>
-                                <td class="text-center">{{ item.heursSupps }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
  
-    </div>
-
 
 
    
@@ -256,6 +288,20 @@
 
 
 </script>
+
+<div class="mt-8 pb-8 ">
+    <div class="flex items-center justify-between">
+        <div>
+            <p class="text-sm">Reçu le <span class="font-semibold">................</span></p>
+            <!-- Remplacez "................" par la date réelle de réception -->
+        </div>
+        <div class="mr-2">
+            <p class="font-semibold">Avis du chef de département</p>
+            <!-- Ajoutez ici la zone où le chef de département peut apposer son cachet -->
+        </div>
+    </div>
+</div>
+
 
 </body>
 {% endblock %}
