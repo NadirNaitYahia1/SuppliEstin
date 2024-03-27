@@ -1,5 +1,15 @@
-{% extends 'header.html' %}
 
+
+  <div class="flex items-center mb-3 mt-10 ms-2  changeType">
+        <p>Enseignant</p>
+        <button class="btn1 bg-blue-950 rounded-md p-2 text-white mx-2">
+            Permanant
+        </button>
+        <button class="btn2 bg-blue-300 rounded-md p-2 text-white mx-2">
+            Vacataire
+        </button>
+    </div> 
+{% extends 'header.html' %}
 {% block title %}{% endblock %}
 
 {% block content %}
@@ -111,7 +121,7 @@
             
 
                 <div class='icons '>
-                        <button  class="font-semibold text-gray-700 rounded-lg text-lg hover:text-blue-600 relative"  >
+                        <button  class="font-semibold text-gray-700 rounded-lg text-lg hover:text-blue-600 relative"  name="modifier" >
                             <i class="fa-solid fa-pen"></i>
                                 <!-- <div class="bg-yellow-100 p-1 absolute top-4 right-7 -mt-2 -mr-2 transition-all duration-300 ease-in-out border border-black text-sm text-black font-medium">
                                     modifier
@@ -170,34 +180,19 @@
         title {
             display: none;
         }
-                 
-               
+           
+        .changeType{
+            display: none;
+        }
+  
 
             }
         </style>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const printButton = document.querySelector('button[name="print"]');
-
-        printButton.addEventListener('click', function() {
-            const tableContainer = document.getElementById("table-container");
-            const teacherTable = document.getElementById("teacher-table");
-            tableContainer.classList.remove("scrollable-table");
-            teacherTable.classList.remove("table-container");
-            print();
-
-            // Après l'impression, rétablissez les classes pour restaurer la fonctionnalité de défilement
-            setTimeout(function() {
-                tableContainer.classList.add("scrollable-table");
-                teacherTable.classList.add("table-container");
-            }, 500); // Attendez 500 millisecondes pour que l'impression se termine avant de rétablir les classes
-        });
-    });
-</script>
 
 
 <div id="table-container" class="table-container  mb-8">
-    <table class="w-full border mx-auto " id="teacher-table">
+    <table class="w-full border 
+     mx-auto " id="teacher-table">
         <thead class='text-col-3 '>
             <tr>
                 <th>N°</th>
@@ -218,12 +213,51 @@
                     <td class="text-center">{{ item.module_enseigne }}</td>
                     <td class="text-center">{{ item.volumeAutorise }}</td>
                     <td class="text-center">{{ item.nbSemaine }}</td>
-                    <td class="text-center">{{ item.heursSupps }}</td>
+                    <td class="text-center modefiable">{{ item.heursSupps }}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const printButton = document.querySelector('button[name="print"]');
+        const downloadButton = document.querySelector('button[name="download"]');
+        const modifierButton = document.querySelector('button[name="modifier"]');
+
+        modifierButton.addEventListener('click', function() {
+
+        })
+        
+        downloadButton.addEventListener('click', function() {
+            const columnModifiable = document.querySelectorAll('.modefiable');
+            columnModifiable.forEach(function(cell) {
+                //  transformer les cellules en input:
+                
+                
+            });
+            
+        }
+        );
+
+
+
+        printButton.addEventListener('click', function() {
+            const tableContainer = document.getElementById("table-container");
+            const teacherTable = document.getElementById("teacher-table");
+            tableContainer.classList.remove("scrollable-table");
+            teacherTable.classList.remove("table-container");
+            print();
+
+            // Après l'impression, rétablissez les classes pour restaurer la fonctionnalité de défilement
+            setTimeout(function() {
+                tableContainer.classList.add("scrollable-table");
+                teacherTable.classList.add("table-container");
+            }, 500); // Attendez 500 millisecondes pour que l'impression se termine avant de rétablir les classes
+        });
+    });
+</script>
+
 
 <style>
     .scrollable-table {
@@ -233,13 +267,27 @@
 
 </style>
 
+<div class="mt-8 pb-36 cachet">
+    <div class="flex items-center justify-around">
+        <div >
+            <p class="text-sm ms-5">Reçu le <span class="font-semibold">................</span></p>
+            <!-- Remplacez "................" par la date réelle de réception -->
+        </div>
+        <div  >
+            <p class="font-semibold mr-5">Avis du chef de département</p>
+            <!-- Ajoutez ici la zone où le chef de département peut apposer son cachet -->
+        </div>
+    </div>
+</div>
+
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
     const teacherTable = document.getElementById("teacher-table");
     const tableContainer = document.getElementById("table-container");
     
-    if (teacherTable.rows.length > 10) {
+    if (teacherTable.rows.length > 12) {
         tableContainer.classList.add("scrollable-table");
     }
 });
@@ -289,19 +337,9 @@
 
 </script>
 
-<div class="mt-8 pb-8 ">
-    <div class="flex items-center justify-between">
-        <div>
-            <p class="text-sm">Reçu le <span class="font-semibold">................</span></p>
-            <!-- Remplacez "................" par la date réelle de réception -->
-        </div>
-        <div class="mr-2">
-            <p class="font-semibold">Avis du chef de département</p>
-            <!-- Ajoutez ici la zone où le chef de département peut apposer son cachet -->
-        </div>
-    </div>
-</div>
-
 
 </body>
+
+
+
 {% endblock %}

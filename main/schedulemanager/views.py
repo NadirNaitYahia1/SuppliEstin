@@ -109,7 +109,7 @@ def fiche_heurs_supps(request, type, year, month):
                 item['nbSemaine'] = nbSemainesMonthYear
                 if listHeurSupps:
                     for heurSupp in listHeurSupps:
-                        if heurSupp[0].idEnseignat.matricule == prof.matricule:
+                        if heurSupp[0] == prof:
                             item['heursSupps'] = heurSupp[0].heursSupps
                         else:
                             item['heursSupps'] = 0
@@ -118,9 +118,6 @@ def fiche_heurs_supps(request, type, year, month):
                     item['heursSupps'] = 0
                     list.append(item)
             print(list)
-
-
-
             context = {
                 'type': type, 
                 'year': year,
