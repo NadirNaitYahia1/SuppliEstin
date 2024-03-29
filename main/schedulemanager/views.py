@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import AnneeUniv, AdminMois,Enseignant,TabMois,Session
 import calendar
 from datetime import datetime, timedelta
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 import json
 
 # Create your views here.
@@ -55,28 +55,86 @@ def set_months(request,year):
         return render(request, 'set_months.html',context)
 # ____________________________________________________________________________________________________________________________________
 
-def fiche_heurs_supps(request, type,year, month):
-    print(type[0:1])
-    if type[0:1].upper() in ['V','P']:
-        profs = Enseignant.get_profs(type[0:1].upper())
+
+def get_list_enseignants(typeEnseignant):
+    return Enseignant.get_profs(typeEnseignant )
+
+def get_list_nb_semaines_mois_annee(year, month):
+    return AdminMois.get_nb_semaine_mois_annee(month, year)
+
+def get_list_heurs_supps_enseignants(profs, idAdminMois):
+    return TabMois.get_heursSupps(profs, idAdminMois) 
+
+
+def get_months_anneeUnivs( ):
+    return AdminMois.get_months_anneeUnivs()
+
+
+def fiche_heurs_supps(request, type, year, month):
+    list = []
+    if type[0:1].upper() in ['V', 'P']:
+        
+        listEnseignants = get_list_enseignants(type[0:1].upper())
+
+        if listEnseignants:
+
+            objAdminMois = get_list_nb_semaines_mois_annee(year, month)
+            nbSemainesMonthYear = objAdminMois[0].nbSemaines
+
+            idMois = objAdminMois[0].idMois
+            listHeurSupps = get_list_heurs_supps_enseignants(listEnseignants, idMois)  
+
+
+
+            listMoisAnnee = get_months_anneeUnivs()
+            anneeUnniv =[]
+
+            for item in listMoisAnnee:
+                if item.anneeUniv.annee_univ not in [annee[0] for annee in anneeUnniv]:
+                    mois_annee = [mois_item.nomMois for mois_item in listMoisAnnee if mois_item.anneeUniv.annee_univ == item.anneeUniv.annee_univ]
+                    anneeUnniv.append([item.anneeUniv.annee_univ, mois_annee])
+
+
+            print('agenda',anneeUnniv)
+
+            print('listHeurSupps',listHeurSupps) 
+    
+
+            for prof in listEnseignants:
+                item = {}
+                item['nom'] = prof.nom
+                item['prenom'] = prof.prenom
+                item['grade'] = prof.grade
+                item['volumeAutorise'] = prof.VolumeAutorise
+                item['nbSemaine'] = nbSemainesMonthYear
+                if listHeurSupps:
+                    for heurSupp in listHeurSupps:
+                        if heurSupp[0] == prof:
+                            item['heursSupps'] = heurSupp[0].heursSupps
+                        else:
+                            item['heursSupps'] = 0
+                    list.append(item)
+                else:
+                    item['heursSupps'] = 0
+                    list.append(item)
+            print(list)
+            context = {
+                'type': type, 
+                'year': year,
+                'month': month,
+                'list': list,
+                'anneeUnniv':   anneeUnniv ,
+                'nbSemainesMonthYear': nbSemainesMonthYear,
+        
+            }
+            print('context',context["nbSemainesMonthYear"])
+            return render(request, 'fiche_heurs_supps.html', context)
     else:   
-        return render(request, '404.html')
-    
-    for prof in profs:
-        print(prof.grade)
+        return HttpResponse('Type de professeur non valide : V pour vacataire et P pour permanent')
 
-    context = {
-        'type': type, # 'vacataires' or 'permanent
-        'year': year,
-        'month': month,
-        'profs': profs,
-    
-    }
-    return render(request, 'fiche_heurs_supps.html', context)
-
-
-# ____________________________________________________________________________________________________________________________________
-
+        
+# _________________________________________________________________________________________________________________________________________________________  
+         
 def fiche_heurs_supps_enseignant(request, enseignant, year, month):
     enseignant = Enseignant.objects.get(id=enseignant)
     if not enseignant:
@@ -87,14 +145,33 @@ def fiche_heurs_supps_enseignant(request, enseignant, year, month):
     year = AnneeUniv.objects.get(annee_univ=year)
     if not year:
         return render(request, '404.html', {'message': 'Année non trouvée'})
-    tab_mois = TabMois.objects.filter(idEnseignat=enseignant, idMois=admin_mois)
+    tab_mois = TabMois.objects.filter(idEnseignat=enseignant, idMois=admin_mois).first()
     isNew = False
     semaines = []
     sessions = None
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)['newSessions']
+            for i in range(len(data)):
+                for session in data[i]:
+                    print("the session: ", session)
+                    new_session = Session(idEnseignat=enseignant, typeSession=session['type'], idTabMois=tab_mois, numSemaine=i+1, Date=session['date'], heurDebut=session['start'], heurFin=session['end'], heurs=session['heurs'], minutes=session['minutes'])
+                    new_session.save()
+                    tab_mois.heursSupps += session['heurs']
+                    if tab_mois.minutesSupps + session['minutes'] >= 60:
+                        tab_mois.heursSupps += 1
+                        tab_mois.minutesSupps = (tab_mois.minutesSupps + session['minutes']) - 60
+                    else:
+                        tab_mois.minutesSupps += session['minutes']
+            tab_mois.save()
+            return JsonResponse({'message': 'Vots séances a été ajoutée avec succès'})
+        except Exception as e:
+            print(e)
+            return JsonResponse({'message': "erreur lors de l'ajout de la séance"})
     if not tab_mois:
         isNew = True
     else:
-        tab_mois = tab_mois.first()
+        tab_mois = tab_mois
         sessions = Session.objects.filter(idTabMois=tab_mois)
         if sessions:
             for i in range(1, admin_mois.nbSemaines+1):
@@ -102,7 +179,10 @@ def fiche_heurs_supps_enseignant(request, enseignant, year, month):
                 for session in sessions:
                     if session.numSemaine == i:
                         semaines[i-1]["sessions"].append((i, session.Date.strftime("%d/%m/%Y"), session.heurDebut.strftime("%H:%M"), session.heurFin.strftime("%H:%M"), session.typeSession, session.heurs, session.minutes))
-    print("Semaines: ",semaines)
+        else:
+            for i in range(1, admin_mois.nbSemaines+1):
+                semaines.append({"numSemaine": i, "sessions": []})
+
 
 
     context = {

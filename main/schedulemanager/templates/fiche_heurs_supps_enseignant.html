@@ -87,18 +87,170 @@ enseignant{% endblock %} {% block content %}
         </div>
     {% endfor %}
 </section>
+<!-- ______________________________________________ Dialogues ___________________________________________________ -->
+<div class="bg-black fixed top-0 left-0 right-0 bottom-0 opacity-40 z-20 hidden" id="bg-dialogue">
+</div>
+<div
+    class="fixed left-[50%] top-[50%] translate-x-[-50%] bg-white
+    translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+    animated-dialogue hidden
+    "
+    id="reset-dialogue"
+    >
+    <div class="w-full h-full flex flex-col items-center justify-between gap-10">
+        <h3 class="text-xl font-semibold text-center">Voulez vous vraiment annuler vos changements ?</h3>
+        <div class="flex flex-row justify-center items-center gap-10 w-full">
+        <button
+            class="text-blue-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="confirm-reset-btn"
+            type="button"
+        >
+            Oui
+        </button>
+        <button
+            class="text-red-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="cancel-reset-btn"
+            type="button"
+        >
+            Non
+        </button>
+        </div>
+    </div>
+</div>
+<div
+    class="fixed left-[50%] top-[50%] translate-x-[-50%] bg-white
+    translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+    animated-dialogue hidden 
+    "
+    id="save-dialogue"
+    >
+    <div class="w-full h-full flex flex-col items-center justify-between gap-10">
+        <h3 class="text-xl font-semibold text-center">Voulez vous vraiment sauvegarder vos changements ?</h3>
+        <div class="flex flex-row justify-center items-center gap-10 w-full">
+        <button
+            class="text-blue-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="confirm-save-btn"
+            type="button"
+        >
+            Oui
+        </button>
+        <button
+            class="text-red-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="cancel-save-btn"
+            type="button"
+        >
+            Non
+        </button>
+        </div>
+    </div>
+</div>
+<div class="fixed left-[50%] top-[50%] translate-x-[-50%] bg-white
+      translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+      animated-dialogue hidden"
+      id="success-dialogue"
+    >
+</div>
+
+<style>
+    .animated-dialogue {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+        opacity: 0;
+        }
+        to {
+        opacity: 1;
+        }
+    }
+    .disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+</style>
 <script>
     const nbSemaines = parseInt("{{ nbSemaines }}");
-    const newSessions = [];
+    const saveBtn = document.getElementById("save-btn");
+    const submitBtn = document.getElementById("submit-btn");
+    const resetBtn = document.getElementById("reset-btn");
+    const printBtn = document.getElementById("print-btn");
+    let newSessions = [];
+    let canSendRequest = true
+    disableSaveBtn();
+    disableResetBtn();
+    
+    // ___________________________________________________ Event Listeners ___________________________________________________
+
     for (let i = 1; i <= nbSemaines; i++) {
         newSessions.push([]);
     }
+    saveBtn.addEventListener("click", () => {
+        document.getElementById("bg-dialogue").classList.remove("hidden");
+        document.getElementById("save-dialogue").classList.remove("hidden");
+        const confirmSaveBtn = document.getElementById("confirm-save-btn");
+        const cancelSaveBtn = document.getElementById("cancel-save-btn");
+        if (canSendRequest){
+            confirmSaveBtn.addEventListener("click", () =>{
+                disableSaveBtn();
+                disableResetBtn();
+                document.getElementById("bg-dialogue").classList.add("hidden");
+                document.getElementById("save-dialogue").classList.add("hidden");
+                const data = {
+                    'newSessions': newSessions
+                }
+                console.log("sent data", data);
+                fetch("", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify(data)
+                }).then(response => response.json())
+                .then(data => {
+                document.getElementById('save-dialogue').classList.add('hidden')
+                document.getElementById('bg-dialogue').classList.add('hidden')
+                setTimeout(() => {
+                document.getElementById('success-dialogue').classList.remove('hidden')
+                document.getElementById('success-dialogue').innerHTML = `
+                    <h3 class="text-xl font-semibold text-center mb-10">${data.message}</h3>
+                    <span class="text-[50px] text-green-500 w-full flex justify-center">
+                    <i class="fa fa-check"></i>
+                    </span>
+                `
+                const dialogueBG = document.getElementById('bg-dialogue')
+                dialogueBG.classList.remove('hidden')
+                dialogueBG.addEventListener('click', () => {
+                    document.getElementById('success-dialogue').classList.add('hidden')
+                    document.getElementById('save-dialogue').classList.add('hidden')
+                    dialogueBG.classList.add('hidden')
+                })
+                }, 500)
+                newSessions = []
+                for (let i = 1; i <= nbSemaines; i++) {
+                    newSessions.push([]);
+                }
+                console.log("reinitialized newSessions", newSessions);
+            })
+            .catch(error => {
+                console.error('Err:', error)
+            })
+            canSendRequest = false
+        })} else {
+            canSendRequest = true
+        }
+        cancelSaveBtn.addEventListener("click", () => {
+            document.getElementById("bg-dialogue").classList.add("hidden");
+            document.getElementById("save-dialogue").classList.add("hidden");
+        })
+    })
     for (let i = 1; i <= nbSemaines; i++) {
         document.getElementById(`add-btn${i}`).addEventListener("click", () => {
             disableAddBtns();
             const semainesList = document.getElementById(`semaines-list${i}`);
             semainesList.innerHTML += `
-                <div class="grid grid-cols-5 gap-x-[2px] font-semibold relative" id="new-session-form">
+                <div class="grid grid-cols-5 gap-x-[2px] font-semibold relative" id="new-session-form${i-1}">
                     <p class="hidden" id='new-nb-semaine'>${i-1}</p>
                     <input class="flex items-center justify-center py-[2px] bg-green-200 border-none" type='date' id='new-session-date'/>
                     <input class="flex items-center justify-center py-[2px] bg-green-200 border-none" type='time' id='new-session-start'/>
@@ -111,39 +263,61 @@ enseignant{% endblock %} {% block content %}
                     </select>
                     <div class="flex items-center justify-center py-[2px] bg-green-200 relative" id='new-session-heurs'>
                         
-                        <button class="absolute right-4 text-blue-700" id="save-new-session">
+                        <button class="absolute right-4 text-blue-700" id="save-new-session${i-1}">
                             <i class="fa-regular fa-bookmark"></i>
                         </button>
+                        <button class="absolute right-10" id="cancel-new-session">
+                            <i class="fa-solid fa-xmark text-red-500"></i>
+                        </button>
                     </div>
+                    <p class="absolute bottom-[-30px] text-sm font-medium text-red-500 hidden bg-white" id="new-session-alert">
+                        Remplissez tous les champs s'il vous plait !
+                    </p>
                 </div>
-                <p class="absolute bottom-[-30px] text-sm font-medium text-red-500 hidden" id="new-session-alert">
-                    Remplissez tous les champs s'il vous plait !
-                </p>
                 `
             
-            const saveNewSessionBtn = document.getElementById("save-new-session");
+            const saveNewSessionBtn = document.getElementById(`save-new-session${i-1}`);
+            const cancelNewSessionBtn = document.getElementById("cancel-new-session");
+            cancelNewSessionBtn.addEventListener("click", () => {
+                document.getElementById(`new-session-form${i-1}`).remove();
+                enableAddBtns();
+            });
             document.getElementById("new-session-date").addEventListener("input", () => {
-                    disableAlertFieldsEmpty();
+                    disableAlertFieldsEmpty(i-1);
                 });
                 document.getElementById("new-session-start").addEventListener("input", () => {
-                    disableAlertFieldsEmpty();
+                    disableAlertFieldsEmpty(i-1);
                 });
                 document.getElementById("new-session-end").addEventListener("input", () => {
-                    disableAlertFieldsEmpty();
+                    disableAlertFieldsEmpty(i-1);
                 });
             saveNewSessionBtn.addEventListener("click", () => {
                 if (document.getElementById("new-session-date").value === "" || document.getElementById("new-session-start").value === "" || document.getElementById("new-session-end").value === "") {
-                    alertFieldsEmpty();
+                    alertFieldsEmpty(i-1);
                     return;
                 }
                 const date = document.getElementById("new-session-date").value;
                 const start = document.getElementById("new-session-start").value;
                 const end = document.getElementById("new-session-end").value;
                 const type = document.getElementById("new-session-type").value;
-                const heurs = document.getElementById("new-session-heurs").innerText;
                 const semaine = parseInt(document.getElementById("new-nb-semaine").innerText)
-                newSessions[semaine].push({date:date, start:start, end:end, type:type, heurs:heurs});
-                document.getElementById("new-session-form").remove();
+                let heurs = 0;
+                let minutes = 0;
+                if (type === "Cours") {
+                    heurs = 2;
+                    minutes = 0;
+                } else if (type === "TD") {
+                    heurs = 1;
+                    minutes = 30;
+                } else if (type === "TP") {
+                    heurs = 1;
+                    minutes = 8;
+                } else {
+                    heurs = 2;
+                    minutes = 0;
+                }
+                newSessions[semaine].push({date:date, start:start, end:end, type:type, heurs:heurs, minutes:minutes});
+                document.getElementById(`new-session-form${i-1}`).remove();
                 enableAddBtns();
                 semainesList.innerHTML += `
                 <div class="grid grid-cols-5 gap-x-[2px] font-semibold" id="add-session-${semaine}-${newSessions.length-1}">
@@ -151,27 +325,43 @@ enseignant{% endblock %} {% block content %}
                     <div class="flex items-center justify-center py-[2px] bg-blue-200">${start}</div>
                     <div class="flex items-center justify-center py-[2px] bg-blue-200">${end}</div>
                     <div class="flex items-center justify-center py-[2px] bg-blue-200">${type}</div>
-                    <div class="flex items-center justify-center py-[2px] bg-blue-200">1h 8min</div>
+                    <div class="flex items-center justify-center py-[2px] bg-blue-200">${heurs}h ${minutes}min</div>
                 </div>
                 `
-                console.log(newSessions);
+                enableResetBtn()
+                enableSaveBtn();
             });
         });
     }
 
-    function alertFieldsEmpty() {
+    resetBtn.addEventListener("click", () => {
+        document.getElementById("bg-dialogue").classList.remove("hidden");
+        document.getElementById("reset-dialogue").classList.remove("hidden");
+        const confirmResetBtn = document.getElementById("confirm-reset-btn");
+        const cancelResetBtn = document.getElementById("cancel-reset-btn");
+        confirmResetBtn.addEventListener("click", () =>{
+            window.location.reload();
+        })
+        cancelResetBtn.addEventListener("click", () => {
+            document.getElementById("bg-dialogue").classList.add("hidden");
+            document.getElementById("reset-dialogue").classList.add("hidden");
+        })
+    });
+    // ___________________________________________________ Helper Functions ___________________________________________________
+
+    function alertFieldsEmpty(i) {
         document.getElementById("new-session-alert").classList.remove("hidden");
-        document.getElementById("save-new-session").classList.add("hidden");
-        const children = document.getElementById("new-session-form").children;
+        document.getElementById(`save-new-session${i}`).classList.add("hidden");
+        const children = document.getElementById(`new-session-form${i}`).children;
         for (let i = 0; i < children.length; i++) {
             children[i].classList.add("bg-red-200");
         }
     }
 
-    function disableAlertFieldsEmpty() {
+    function disableAlertFieldsEmpty(i) {
         document.getElementById("new-session-alert").classList.add("hidden");
-        document.getElementById("save-new-session").classList.remove("hidden");
-        const children = document.getElementById("new-session-form").children;
+        document.getElementById(`save-new-session${i}`).classList.remove("hidden");
+        const children = document.getElementById(`new-session-form${i}`).children;
         for (let i = 0; i < children.length; i++) {
             children[i].classList.remove("bg-red-200");
         }
@@ -190,6 +380,31 @@ enseignant{% endblock %} {% block content %}
             btn.disabled = false;
             btn.classList.remove("text-gray-300");
         }
+    }
+
+   
+    function disableSaveBtn() {
+        saveBtn.disabled = true;
+        saveBtn.classList.add("text-gray-300");
+        saveBtn.classList.add("cursor-default");
+    }
+
+    function enableSaveBtn() {
+        saveBtn.disabled = false;
+        saveBtn.classList.remove("text-gray-300");
+        saveBtn.classList.remove("cursor-default");
+    }
+
+    function disableResetBtn() {
+        resetBtn.disabled = true;
+        resetBtn.classList.add("text-gray-300");
+        resetBtn.classList.add("cursor-default");
+    }
+
+    function enableResetBtn() {
+        resetBtn.disabled = false;
+        resetBtn.classList.remove("text-gray-300");
+        resetBtn.classList.remove("cursor-default");
     }
 </script>
 {% endblock %}
