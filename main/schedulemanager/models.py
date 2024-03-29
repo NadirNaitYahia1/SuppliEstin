@@ -564,12 +564,12 @@ class AdminMois(models.Model):
         super().save(*args, **kwargs)
     
     def get_nb_semaine_mois_annee(nomMois,annee):
-        print('model: ')
+   
         try: 
             objAdminMois = AdminMois.objects.filter(nomMois=nomMois, anneeUniv=annee)
         except AdminMois.DoesNotExist:
             objAdminMois = None
-            print('nnn')
+ 
         return objAdminMois
     def get_months_anneeUnivs() :
         return AdminMois.objects.all()
@@ -606,6 +606,7 @@ class TabMois(models.Model):
     def set_notEditable(self):
         self.isEditable = False
         self.save()
+        
 
     def save(self, *args, **kwargs):
         if self.heursSupps < 0:
@@ -614,13 +615,15 @@ class TabMois(models.Model):
             raise ValidationError("Le nombre de minutes supplémentaires doit être compris entre 0 et 59")
         super().save(*args, **kwargs)
 
+        
 
-    def get_heursSupps(idEnseignants, idMois):
+    def get_heursSupps(listEnseignants, idMois):
         arr =[]
-        for idEnseignant in idEnseignants:
-            item = TabMois.objects.filter(idEnseignat=idEnseignant, idMois=idMois)
-            if item : 
-                arr.append(item)
+        allObjects = TabMois.objects.all()
+        for oneObject in allObjects: 
+            for ens in listEnseignants: 
+                if oneObject.idEnseignat.id == ens.id: 
+                    arr.append({"id":oneObject.idEnseignat.id,'nbHeursSupp':oneObject.heursSupps})
         return arr
 
 SESSION_TYPE = (
