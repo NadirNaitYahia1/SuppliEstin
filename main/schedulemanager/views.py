@@ -62,62 +62,65 @@ def get_list_enseignants(typeEnseignant):
 def get_list_nb_semaines_mois_annee(year, month):
     return AdminMois.get_nb_semaine_mois_annee(month, year)
 
-def get_list_heurs_supps_enseignants(profs, idAdminMois):
-    return TabMois.get_heursSupps(profs, idAdminMois) 
+def get_list_heurs_supps_enseignants(listEnseignants, idAdminMois):
+    return TabMois.get_heursSupps(listEnseignants, idAdminMois) 
 
 
 def get_months_anneeUnivs( ):
     return AdminMois.get_months_anneeUnivs()
 
+def save(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        print('data')
+        print(data)
+
+
+
+ 
 
 def fiche_heurs_supps(request, type, year, month):
     list = []
     if type[0:1].upper() in ['V', 'P']:
-        
         listEnseignants = get_list_enseignants(type[0:1].upper())
-
+        
         if listEnseignants:
-
             objAdminMois = get_list_nb_semaines_mois_annee(year, month)
             nbSemainesMonthYear = objAdminMois[0].nbSemaines
 
             idMois = objAdminMois[0].idMois
             listHeurSupps = get_list_heurs_supps_enseignants(listEnseignants, idMois)  
 
-
-
             listMoisAnnee = get_months_anneeUnivs()
+            
             anneeUnniv =[]
-
             for item in listMoisAnnee:
                 if item.anneeUniv.annee_univ not in [annee[0] for annee in anneeUnniv]:
                     mois_annee = [mois_item.nomMois for mois_item in listMoisAnnee if mois_item.anneeUniv.annee_univ == item.anneeUniv.annee_univ]
                     anneeUnniv.append([item.anneeUniv.annee_univ, mois_annee])
 
 
-            print('agenda',anneeUnniv)
 
-            print('listHeurSupps',listHeurSupps) 
-    
-
+            list =[]
+            
             for prof in listEnseignants:
-                item = {}
+                item={} 
+                item['id'] = prof.id
                 item['nom'] = prof.nom
                 item['prenom'] = prof.prenom
                 item['grade'] = prof.grade
                 item['volumeAutorise'] = prof.VolumeAutorise
-                item['nbSemaine'] = nbSemainesMonthYear
-                if listHeurSupps:
-                    for heurSupp in listHeurSupps:
-                        if heurSupp[0] == prof:
-                            item['heursSupps'] = heurSupp[0].heursSupps
-                        else:
-                            item['heursSupps'] = 0
-                    list.append(item)
-                else:
-                    item['heursSupps'] = 0
-                    list.append(item)
-            print(list)
+                item['nbSemaine'] = nbSemainesMonthYear                
+                item['nbHeursSupp'] = 0 
+
+                for heurSupp in listHeurSupps: 
+                    if heurSupp['id'] == prof.id : 
+                        item['nbHeursSupp'] = heurSupp['nbHeursSupp']
+                        break; 
+
+                list.append(item)
+           
+          
             context = {
                 'type': type, 
                 'year': year,
