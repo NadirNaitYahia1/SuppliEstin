@@ -72,10 +72,11 @@ def get_months_anneeUnivs( ):
 def save(request):
     if request.method == 'POST':
         data = json.loads(request.body)
+        print('data')
         print(data)
 
 
-        return
+
  
 
 def fiche_heurs_supps(request, type, year, month):

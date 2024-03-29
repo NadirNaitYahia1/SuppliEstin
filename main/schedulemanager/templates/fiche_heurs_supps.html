@@ -14,6 +14,7 @@
 {% block content %}
 <body class="mx-auto w-[90%] border mb-10">
 
+
     <div class='flex items-center mt-3'>
         <p class=' w-[20%]'>Ref N:
             <input  placeholder='  ....... ' class='w-[20%] border text-center' ></input> ESTIN/2023
@@ -61,7 +62,7 @@
                 <i class="fa-solid fa-pen"></i>
             </button>
             
-            <button>
+            <button name="save">
                 <i class="fa-solid fa-floppy-disk"></i>
             </button>
 
@@ -76,6 +77,7 @@
 
     </div>
 
+    
     <style>
         @media print {
             .icons {
@@ -115,8 +117,11 @@
     .changeType{
         display: none;
     }
+
+
         }
     </style>
+
 
     <div id="table-container" class="table-container  mb-8">
         <table class="w-full border mx-auto " id="teacher-table">
@@ -141,7 +146,7 @@
                         <td class="text-center">{{ item.module_enseigne }}</td>
                         <td class="text-center">{{ item.volumeAutorise }}</td>
                         <td class="text-center">{{ item.nbSemaine }}</td>
-                        <td class="text-center toModify" data-column-name="nbHeursSupp">{{ item.nbHeursSupp }}</td>
+                        <td class="text-center toModify">{{ item.nbHeursSupp }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -170,7 +175,8 @@
 
 
     <script>
-    // Changer la couleur du bouton actif: 
+
+// Changer la couleur du bouton actif: 
     const button1 = document.querySelector(".btn1");
     const button2 = document.querySelector(".btn2");
 
@@ -202,7 +208,7 @@
         changeColor(2);
     });
 
-    // Ajouter la classe 'scrollable-table' si le tableau contient plus de 12 lignes
+// Ajouter la classe 'scrollable-table' si le tableau contient plus de 12 lignes
     document.addEventListener("DOMContentLoaded", function() {
         const teacherTable = document.getElementById("teacher-table");
         const tableContainer = document.getElementById("table-container");
@@ -212,7 +218,69 @@
         }
     });
 
-    // Fonctionnalité de modification :
+
+// Filtrer les options de mois en fonction de l'année sélectionnée
+    const selectYear = document.querySelector('select[name="selected_year"]');
+    const selectMonth = document.querySelector('select[name="selected_month"]');
+
+
+    selectYear.addEventListener('change', function() {
+        const selectedYear = selectYear.value;
+
+
+        for (let i = 0; i < selectMonth.options.length; i++) {
+            const option = selectMonth.options[i];
+            const [month, year] = option.value.split('-');
+
+        
+            if (year === selectedYear) {
+                option.style.display = 'block'; 
+            } else {
+                option.style.display = 'none';  
+            }
+        }
+        if (selectedYear === "{{ year }}") {
+            selectMonth.value = "{{ month }}-{{ year }}";
+        } else {
+            selectMonth.value = '';
+        }
+    });
+    selectMonth.addEventListener('change', function() {
+        const selectedYear = selectYear.value;
+        const selectedMonth = selectMonth.value.split('-')[0];
+        console.log(selectedYear, selectedMonth)
+        const url = `/fiche-heurs-supps/{{ type }}/${selectedYear}/${selectedMonth}/`;
+        window.location.href = url;
+    });
+
+    selectYear.value = "{{ year }}";
+    selectMonth.value = "{{ month }}-{{ year }}";
+
+    selectYear.dispatchEvent(new Event('change'));
+
+
+
+
+
+// Fonctionnalité d'impression et de téléchargement 
+    document.addEventListener("DOMContentLoaded", function() {
+        const printButton = document.querySelector('button[name="print"]');
+
+        printButton.addEventListener('click', function() {
+            const tableContainer = document.getElementById("table-container");
+            const teacherTable = document.getElementById("teacher-table");
+            tableContainer.classList.remove("scrollable-table");
+            teacherTable.classList.remove("table-container");
+            print();
+            setTimeout(function() {
+                tableContainer.classList.add("scrollable-table");
+                teacherTable.classList.add("table-container");
+            }, 500);  
+        });
+
+    });
+
+// fonctionnalité de modification :
     document.addEventListener("DOMContentLoaded", function() {
         const modifierButton = document.querySelector('.modifier-button');
 
@@ -229,33 +297,53 @@
         });
     });
 
-    // Fonctionnalité de sauvegarde des modifications
-    document.addEventListener("DOMContentLoaded", function() {
-    const saveButton = document.querySelector('button[name="save"]');
-    saveButton.addEventListener('click', function() {
-        const modifiedRows = document.querySelectorAll('.modefiable');
-        const data = []; // Tableau pour stocker les données modifiées
+// Fonctionnalité de sauvegarde des modifications
+    const saveButton = document.querySelector('save');
 
-        modifiedRows.forEach(function(row) {
-            const inputs = row.querySelectorAll('input[type="text"]');
-            const rowData = {}; // Objet pour stocker les données de chaque ligne modifiée
-            
-            inputs.forEach(function(input) {
-                const columnName = input.parentElement.getAttribute('data-column-name');
-                const columnValue = input.value;
-                rowData[columnName] = columnValue; // Stocker la valeur dans l'objet rowData sous forme de paire clé-valeur
-            });
+saveButton.addEventListener('click', function() {
+    console.log('im here ')
+    const modifiedRows = document.querySelectorAll('.modefiable');
+    console.log(modifiedRows);
+    const data = [];  
 
-            data.push(rowData); // Ajouter l'objet rowData au tableau de données
+    modifiedRows.forEach(function(row) {
+        const inputs = row.querySelectorAll('input[type="text"]');
+        const rowData = {};  
+        
+        inputs.forEach(function(input) {
+            const columnName = input.parentElement.getAttribute('data-column-name');
+            const columnValue = input.value;
+            rowData[columnName] = columnValue;   
         });
 
-        // Envoyer les données modifiées au serveur pour sauvegarde dans la base de données
-        // Vous pouvez utiliser AJAX (par exemple, XMLHttpRequest ou fetch) pour cela
-        // Ici, j'imprime simplement les données modifiées dans la console pour démonstration
-        console.log(data);
-    });
+        data.push(rowData); 
     });
 
-    </script>
+    // Envoyer les données modifiées au serveur pour sauvegarde
+    fetch('/fiche-heurs-supps/save/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}', 
+        },
+        body: JSON.stringify({ data: data }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Les données ont été sauvegardées avec succès.');
+        } else {
+            console.error('La sauvegarde des données a échoué.');
+        }
+    })
+    .catch(error => {
+        console.error('Une erreur s\'est produite lors de la sauvegarde des données:', error);
+    });
+});
+
+</script>
+
+
 </body>
+
 {% endblock %}
