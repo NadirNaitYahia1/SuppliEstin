@@ -596,6 +596,7 @@ class TabMois(models.Model):
     minutesSupps  = models.IntegerField()
     idMois = models.ForeignKey('AdminMois', on_delete=models.CASCADE)
     isEditable = models.BooleanField(default=True)
+    soumis = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nomMois+" "+str(self.idMois.anneeUniv)+" "+str(self.idEnseignat)
@@ -606,7 +607,10 @@ class TabMois(models.Model):
     def set_notEditable(self):
         self.isEditable = False
         self.save()
-        
+    
+    def set_soumis(self):
+        self.soumis = True
+        self.save()
 
     def save(self, *args, **kwargs):
         if self.heursSupps < 0:

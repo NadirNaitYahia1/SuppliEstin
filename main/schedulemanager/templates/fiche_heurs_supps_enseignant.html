@@ -75,12 +75,18 @@ enseignant{% endblock %} {% block content %}
                     <div class="flex items-center justify-center py-[2px]">Nombre d'heurs</div>
                 </div>
                 {% for session in semaine.sessions %}
-                    <div class="grid grid-cols-5 gap-x-[2px] font-semibold">
+                    <div class="grid grid-cols-5 gap-x-[2px] font-semibold relative">
+                        <p class="hidden" id="session-id">{{session.7}}</p>
+                        <p class="hidden" id="week-number">{{session.0}}</p>
                         <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.1}}</div>
                         <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.2}}</div>
                         <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.3}}</div>
                         <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.4}}</div>
                         <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.5}}h {{session.6}}min</div>
+                        <div class="absolute left-2 h-full flex items-center">
+                            <button class="w-3 h-3 border border-gray-800 rounded-sm flex items-center justify-center text-blue-600 text-sm" id="select-session-{{session.7}}">
+                            </button>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
@@ -150,6 +156,60 @@ enseignant{% endblock %} {% block content %}
       id="success-dialogue"
     >
 </div>
+<div
+    class="fixed left-[50%] top-[50%] translate-x-[-50%] bg-white
+    translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+    animated-dialogue hidden 
+    "
+    id="submit-dialogue"
+    >
+    <div class="w-full h-full flex flex-col items-center justify-between gap-10">
+        <h3 class="text-xl font-semibold text-center">Voulez vous vraiment soumettre vos heurs supplémentaires ?</h3>
+        <div class="flex flex-row justify-center items-center gap-10 w-full">
+        <button
+            class="text-blue-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="confirm-submit-btn"
+            type="button"
+        >
+            Oui
+        </button>
+        <button
+            class="text-red-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="cancel-submit-btn"
+            type="button"
+        >
+            Non
+        </button>
+        </div>
+    </div>
+</div>
+<div
+    class="fixed left-[50%] top-[50%] translate-x-[-50%] bg-white
+    translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+    animated-dialogue hidden 
+    "
+    id="delete-dialogue"
+    >
+    <div class="w-full h-full flex flex-col items-center justify-between gap-10">
+        <h3 class="text-xl font-semibold text-center">Voulez vous vraiment soumettre vos heurs supplémentaires ?</h3>
+        <div class="flex flex-row justify-center items-center gap-10 w-full">
+        <button
+            class="text-blue-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="confirm-delete-btn"
+            type="button"
+        >
+            Oui
+        </button>
+        <button
+            class="text-red-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="cancel-delete-btn"
+            type="button"
+        >
+            Non
+        </button>
+        </div>
+    </div>
+</div>
 
 <style>
     .animated-dialogue {
@@ -175,12 +235,84 @@ enseignant{% endblock %} {% block content %}
     const submitBtn = document.getElementById("submit-btn");
     const resetBtn = document.getElementById("reset-btn");
     const printBtn = document.getElementById("print-btn");
+    const deleteBtns = document.querySelectorAll('[id^="delete-btn"]');
+    const selectBtns = document.querySelectorAll('[id^="select-session"]');
     let newSessions = [];
+    let selectedSessions = [];
+    let sessionsToDelete = [];
     let canSendRequest = true
     disableSaveBtn();
     disableResetBtn();
-    
+    disableDeleteButtons()
+
+    for (let i = 1; i <= nbSemaines; i++) {
+        selectedSessions.push([]);
+    }
+
+
     // ___________________________________________________ Event Listeners ___________________________________________________
+
+    for (let i = 0; i < selectBtns.length; i++) {
+        selectBtns[i].addEventListener("click", () => {
+            const sessionID = selectBtns[i].parentElement.parentElement.children[0].innerText;
+            const weekNumber = parseInt(selectBtns[i].parentElement.parentElement.children[1].innerText) -1;
+            if (selectedSessions[weekNumber].includes(sessionID)) {
+                const siblings = selectBtns[i].parentNode.parentNode.children;
+                for (let i = 0; i < siblings.length; i++) {
+                    siblings[i].classList.remove("bg-orange-200");
+                }
+                selectBtns[i].innerHTML = "";
+                selectedSessions[weekNumber] = selectedSessions[weekNumber].filter(session => session !== sessionID);
+                if (selectedSessions[weekNumber].length === 0) {
+                    disableDeleteButton(weekNumber+1);
+                }
+            } else {
+                selectBtns[i].innerHTML = "<i class='fa-solid fa-check'></i>";
+                if (selectedSessions[weekNumber].length === 0) {
+                    enableDeleteButton(weekNumber+1);
+                }
+                const siblings = selectBtns[i].parentNode.parentNode.children;
+                for (let i = 0; i < siblings.length; i++) {
+                    siblings[i].classList.add("bg-orange-200");
+                }
+                selectedSessions[weekNumber].push(sessionID);
+                console.log("selectedSessions", selectedSessions);
+            }
+        });
+    }
+
+    for (let i = 1, len = deleteBtns.length; i <= len; i++) {
+        deleteBtns[i-1].addEventListener("click", () => {
+            document.getElementById("bg-dialogue").classList.remove("hidden");
+            document.getElementById("delete-dialogue").classList.remove("hidden");
+            const confirmDeleteBtn = document.getElementById("confirm-delete-btn");
+            const cancelDeleteBtn = document.getElementById("cancel-delete-btn");
+            confirmDeleteBtn.addEventListener("click", () => {
+                for (let j = 0; j < selectedSessions[i-1].length; j++) {
+                    if (!sessionsToDelete.includes(selectedSessions[i-1][j])) {
+                        sessionsToDelete.push(selectedSessions[i-1][j]);
+                        const session = document.getElementById(`select-session-${selectedSessions[i-1][j]}`).parentNode.parentNode;
+                        for (let k = 0; k < session.children.length; k++) {
+                            session.children[k].classList.remove("bg-orange-200");
+                            session.children[k].classList.add("bg-red-200");
+                        }
+                        document.getElementById(`select-session-${selectedSessions[i-1][j]}`).remove();
+                    }
+                }
+                selectedSessions[i-1] = [];
+                console.log("sessionsToDelete", sessionsToDelete);
+                document.getElementById("bg-dialogue").classList.add("hidden");
+                document.getElementById("delete-dialogue").classList.add("hidden");
+                enableSaveBtn();
+                enableResetBtn();
+                disableSubmitBtn();
+            });
+            confirmDeleteBtn.addEventListener("click", () => {
+                document.getElementById("bg-dialogue").classList.add("hidden");
+                document.getElementById("reset-dialogue").classList.add("hidden");
+            });
+        });
+    }
 
     for (let i = 1; i <= nbSemaines; i++) {
         newSessions.push([]);
@@ -194,12 +326,13 @@ enseignant{% endblock %} {% block content %}
             confirmSaveBtn.addEventListener("click", () =>{
                 disableSaveBtn();
                 disableResetBtn();
+                enableSubmitBtn();
                 document.getElementById("bg-dialogue").classList.add("hidden");
                 document.getElementById("save-dialogue").classList.add("hidden");
                 const data = {
-                    'newSessions': newSessions
+                    'newSessions': newSessions,
+                    'sessionsToDelete': sessionsToDelete
                 }
-                console.log("sent data", data);
                 fetch("", {
                     method: "POST",
                     headers: {
@@ -330,6 +463,7 @@ enseignant{% endblock %} {% block content %}
                 `
                 enableResetBtn()
                 enableSaveBtn();
+                disableSubmitBtn();
             });
         });
     }
@@ -347,7 +481,52 @@ enseignant{% endblock %} {% block content %}
             document.getElementById("reset-dialogue").classList.add("hidden");
         })
     });
+
+    submitBtn.addEventListener("click", () => {
+        document.getElementById("bg-dialogue").classList.remove("hidden");
+        document.getElementById("submit-dialogue").classList.remove("hidden");
+        const confirmSubmitBtn = document.getElementById("confirm-submit-btn");
+        const cancelSubmitBtn = document.getElementById("cancel-submit-btn");
+        confirmSubmitBtn.addEventListener("click", () =>{
+            document.getElementById("bg-dialogue").classList.add("hidden");
+            document.getElementById("submit-dialogue").classList.add("hidden");
+            fetch("submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({submit: true})
+            }).then(response => response.json())
+            .then(data => {
+                document.getElementById('success-dialogue').classList.remove('hidden')
+                document.getElementById('success-dialogue').innerHTML = `
+                    <h3 class="text-xl font-semibold text-center mb-10">${data.message}</h3>
+                    <span class="text-[50px] text-green-500 w-full flex justify-center">
+                    <i class="fa fa-check"></i>
+                    </span>
+                `
+                const dialogueBG = document.getElementById('bg-dialogue')
+                dialogueBG.classList.remove('hidden')
+                dialogueBG.addEventListener('click', () => {
+                    document.getElementById('success-dialogue').classList.add('hidden')
+                    dialogueBG.classList.add('hidden')
+                })
+            })
+            .catch(error => {
+                console.error('Err:', error)
+            })
+        })
+        cancelSubmitBtn.addEventListener("click", () => {
+            document.getElementById("bg-dialogue").classList.add("hidden");
+            document.getElementById("submit-dialogue").classList.add("hidden");
+        })
+    
+    })
+
+
     // ___________________________________________________ Helper Functions ___________________________________________________
+
 
     function alertFieldsEmpty(i) {
         document.getElementById("new-session-alert").classList.remove("hidden");
@@ -406,6 +585,48 @@ enseignant{% endblock %} {% block content %}
         resetBtn.classList.remove("text-gray-300");
         resetBtn.classList.remove("cursor-default");
     }
+
+    function disableSubmitBtn() {
+        submitBtn.disabled = true;
+        submitBtn.classList.add("text-gray-300");
+        submitBtn.classList.add("cursor-default");
+    }
+
+    function enableSubmitBtn() {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("text-gray-300");
+        submitBtn.classList.remove("cursor-default");
+    }
+
+    function disableDeleteButtons() {
+        for (let i = 1; i <= nbSemaines; i++) {
+            const btn = document.getElementById(`delete-btn${i}`);
+            btn.disabled = true;
+            btn.classList.add("text-gray-300");
+        }
+    }
+
+    function enableDeleteButtons() {
+        for (let i = 1; i <= nbSemaines; i++) {
+            const btn = document.getElementById(`delete-btn${i}`);
+            btn.disabled = false;
+            btn.classList.remove("text-gray-300");
+        }
+    }
+
+    function disableDeleteButton(i){
+        const btn = document.getElementById(`delete-btn${i}`);
+        btn.disabled = true;
+        btn.classList.add("text-gray-300");
+    }
+
+    function enableDeleteButton(i){
+        const btn = document.getElementById(`delete-btn${i}`);
+        btn.disabled = false;
+        btn.classList.remove("text-gray-300");
+    }
+
+    
 </script>
 {% endblock %}
 

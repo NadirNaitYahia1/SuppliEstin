@@ -809,16 +809,16 @@ select {
   right: 0px;
 }
 
+.right-10 {
+  right: 2.5rem;
+}
+
 .right-3 {
   right: 0.75rem;
 }
 
 .right-4 {
   right: 1rem;
-}
-
-.right-7 {
-  right: 1.75rem;
 }
 
 .top-0 {
@@ -833,8 +833,8 @@ select {
   top: 50%;
 }
 
-.right-10 {
-  right: 2.5rem;
+.left-2 {
+  left: 0.5rem;
 }
 
 .z-20 {
@@ -872,14 +872,6 @@ select {
 .my-auto {
   margin-top: auto;
   margin-bottom: auto;
-}
-
-.-mr-2 {
-  margin-right: -0.5rem;
-}
-
-.-mt-2 {
-  margin-top: -0.5rem;
 }
 
 .mb-10 {
@@ -958,6 +950,14 @@ select {
   height: 100vh;
 }
 
+.h-5 {
+  height: 1.25rem;
+}
+
+.h-3 {
+  height: 0.75rem;
+}
+
 .w-\[100\%\] {
   width: 100%;
 }
@@ -992,6 +992,14 @@ select {
 
 .w-full {
   width: 100%;
+}
+
+.w-5 {
+  width: 1.25rem;
+}
+
+.w-3 {
+  width: 0.75rem;
 }
 
 .translate-x-\[-50\%\] {
@@ -1115,6 +1123,14 @@ select {
   border-radius: 0.75rem;
 }
 
+.rounded {
+  border-radius: 0.25rem;
+}
+
+.rounded-sm {
+  border-radius: 0.125rem;
+}
+
 .border {
   border-width: 1px;
 }
@@ -1148,6 +1164,11 @@ select {
 .border-gray-600 {
   --tw-border-opacity: 1;
   border-color: rgb(75 85 99 / var(--tw-border-opacity));
+}
+
+.border-gray-800 {
+  --tw-border-opacity: 1;
+  border-color: rgb(31 41 55 / var(--tw-border-opacity));
 }
 
 .bg-black {
@@ -1200,12 +1221,18 @@ select {
   background-color: rgb(254 249 195 / var(--tw-bg-opacity));
 }
 
-.bg-opacity-40 {
-  --tw-bg-opacity: 0.4;
+.bg-gray-800 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(31 41 55 / var(--tw-bg-opacity));
 }
 
-.p-1 {
-  padding: 0.25rem;
+.bg-orange-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 215 170 / var(--tw-bg-opacity));
+}
+
+.bg-opacity-40 {
+  --tw-bg-opacity: 0.4;
 }
 
 .p-10 {
@@ -1378,10 +1405,8 @@ select {
   opacity: 0.4;
 }
 
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+.filter {
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 .duration-300 {

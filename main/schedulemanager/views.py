@@ -155,6 +155,7 @@ def fiche_heurs_supps_enseignant(request, enseignant, year, month):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)['newSessions']
+            sessions_to_delete = json.loads(request.body)['sessionsToDelete']
             for i in range(len(data)):
                 for session in data[i]:
                     print("the session: ", session)
@@ -167,7 +168,16 @@ def fiche_heurs_supps_enseignant(request, enseignant, year, month):
                     else:
                         tab_mois.minutesSupps += session['minutes']
             tab_mois.save()
-            return JsonResponse({'message': 'Vots séances a été ajoutée avec succès'})
+            for session in sessions_to_delete:
+                session_to_delete = Session.objects.get(idSeance=session)
+                tab_mois.heursSupps -= session_to_delete.heurs
+                if tab_mois.minutesSupps - session_to_delete.minutes < 0:
+                    tab_mois.heursSupps -= 1
+                    tab_mois.minutesSupps = 60 - (session_to_delete.minutes - tab_mois.minutesSupps)
+                else:
+                    tab_mois.minutesSupps -= session_to_delete.minutes
+                session_to_delete.delete()
+            return JsonResponse({'message': 'Vots séances a été modifiées avec succès'})
         except Exception as e:
             print(e)
             return JsonResponse({'message': "erreur lors de l'ajout de la séance"})
@@ -181,7 +191,7 @@ def fiche_heurs_supps_enseignant(request, enseignant, year, month):
                 semaines.append({"numSemaine": i, "sessions": []})
                 for session in sessions:
                     if session.numSemaine == i:
-                        semaines[i-1]["sessions"].append((i, session.Date.strftime("%d/%m/%Y"), session.heurDebut.strftime("%H:%M"), session.heurFin.strftime("%H:%M"), session.typeSession, session.heurs, session.minutes))
+                        semaines[i-1]["sessions"].append((i, session.Date.strftime("%d/%m/%Y"), session.heurDebut.strftime("%H:%M"), session.heurFin.strftime("%H:%M"), session.typeSession, session.heurs, session.minutes, session.idSeance))
         else:
             for i in range(1, admin_mois.nbSemaines+1):
                 semaines.append({"numSemaine": i, "sessions": []})
@@ -201,6 +211,22 @@ def fiche_heurs_supps_enseignant(request, enseignant, year, month):
         'nbSemaines': admin_mois.nbSemaines,
     }
     return render(request, 'fiche_heurs_supps_enseignant.html', context)
+
+def set_submited(request, enseignant, year, month):
+    enseignant = Enseignant.objects.get(id=enseignant)
+    if not enseignant:
+        return render(request, '404.html', {'message': 'Enseignant non trouvé'})
+    admin_mois = AdminMois.objects.get(anneeUniv=AnneeUniv.objects.get(annee_univ=year), nomMois=month)
+    if not admin_mois:
+        return render(request, '404.html', {'message': 'Mois non trouvé'})
+    year = AnneeUniv.objects.get(annee_univ=year)
+    if not year:
+        return render(request, '404.html', {'message': 'Année non trouvée'})
+    tab_mois = TabMois.objects.filter(idEnseignat=enseignant, idMois=admin_mois).first()
+    if not tab_mois:
+        return render(request, '404.html', {'message': 'Fiche de l\'enseignant non trouvée'})
+    tab_mois.set_soumis()
+    return JsonResponse({'message': "Fiche de l\'enseignant soumise avec succès"})
 
 #Semaines:  [(1, datetime.date(2024, 1, 9), datetime.time(9, 30, 18), datetime.time(11, 0), 'Cours', 2, 0), 
 #            (1, datetime.date(2024, 3, 26), datetime.time(11, 7, 5), datetime.time(11, 7, 8), 'TD', 1, 30)]
