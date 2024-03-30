@@ -167,7 +167,6 @@ def fiche_heurs_supps_enseignant(request, enseignant, year, month):
                         tab_mois.minutesSupps = (tab_mois.minutesSupps + session['minutes']) - 60
                     else:
                         tab_mois.minutesSupps += session['minutes']
-            tab_mois.save()
             for session in sessions_to_delete:
                 session_to_delete = Session.objects.get(idSeance=session)
                 tab_mois.heursSupps -= session_to_delete.heurs
@@ -177,6 +176,8 @@ def fiche_heurs_supps_enseignant(request, enseignant, year, month):
                 else:
                     tab_mois.minutesSupps -= session_to_delete.minutes
                 session_to_delete.delete()
+            tab_mois.soumis = False
+            tab_mois.save()
             return JsonResponse({'message': 'Vots séances a été modifiées avec succès'})
         except Exception as e:
             print(e)
@@ -209,6 +210,9 @@ def fiche_heurs_supps_enseignant(request, enseignant, year, month):
         'year': year,
         'month': month,
         'nbSemaines': admin_mois.nbSemaines,
+        'is_submited': tab_mois.soumis,
+        'heursSupps': tab_mois.heursSupps,
+        'minutesSupps': tab_mois.minutesSupps
     }
     return render(request, 'fiche_heurs_supps_enseignant.html', context)
 

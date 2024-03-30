@@ -28,31 +28,61 @@ enseignant{% endblock %} {% block content %}
     <div
     class="w-[80%] p-6 my-auto border-double border-black border-4 mx-auto rounded-lg flex flex-col justify-center items-center"
     >
-        <p>Fiche de Suivi des Heures Supplimentaire</p>
+        <p>Fiche de Suivi des Heures Supplimentaires</p>
         <p>Mois: <span class="font-semibold">{{ month }}</span></p>  
     </div>
   </div>
 </section>
 
 <div class="flex justify-end px-[5%] w-full text-xl gap-8 text-gray-700">
-    <button id="reset-btn">
+    <button class="relative" id="reset-btn">
         <i class="fas fa-redo-alt"></i>
+        <div
+                class="bg-yellow-100 border border-black absolute text-sm text-black top-4 right-3 px-1 hidden"
+                id="redo-text"
+              >
+                réinitialiser
+              </div>
     </button>
-    <button id="save-btn">
+    <button class="relative" id="save-btn">
         <i class="fas fa-save"></i>
+        <div
+                class="bg-yellow-100 border border-black absolute text-sm text-black top-4 right-3 px-1 hidden"
+                id="save-text"
+              >
+                sauvegarder
+              </div>
     </button>
-    <button id="submit-btn">
+    <button class="relative" id="submit-btn">
         <i class="fa-solid fa-paper-plane"></i>
+        <div
+                class="bg-yellow-100 border border-black absolute text-sm text-black top-4 right-3 px-1 hidden"
+                id="submit-text"
+              >
+                soumettre
+              </div>
     </button>
-    <button id="print-btn">
+    <button class="relative" id="print-btn">
         <i class="fa-solid fa-print"></i>
+        <div
+                class="bg-yellow-100 border border-black absolute text-sm text-black top-4 right-3 px-1 hidden"
+                id="print-text"
+              >
+                imprimer
+              </div>
     </button>
-    <button id="print-download">
+    <button class="relative" id="print-download">
         <i class="fa-solid fa-download"></i>
+        <div
+                class="bg-yellow-100 border border-black absolute text-sm text-black top-4 right-3 px-1 hidden"
+                id="download-text"
+              >
+                télécharger
+              </div>
     </button>
 </div>
 
-<section class="px-[5%] felx flex-col items-center gap-[50px] pb-[100px]">
+<section class="px-[5%] felx flex-col items-center gap-[50px] pb-[40px]">
     {% for semaine in semaines %}
         <div class="flex flex-col items-center my-10 gap-4" id="semaine-container">
             <div class="w-full flex justify-center">
@@ -211,6 +241,14 @@ enseignant{% endblock %} {% block content %}
     </div>
 </div>
 
+<!-- Displaying the total hours of the month -->
+
+<section class="flex flex-row justify-end px-[100px] items-center gap-5 pb-[40px]">
+    <h4 class="text-xl font-semibold">
+        Total des heures supplémentaires sauvegardées: <span class="text-blue-600">{{ heursSupps }}h {{ minutesSupps }}min</span>
+    </h4>
+</section>
+
 <style>
     .animated-dialogue {
         animation: fadeIn 0.5s ease-in-out;
@@ -231,19 +269,35 @@ enseignant{% endblock %} {% block content %}
 </style>
 <script>
     const nbSemaines = parseInt("{{ nbSemaines }}");
+    const isSubmitted = "{{ is_submited }}" == "True";
     const saveBtn = document.getElementById("save-btn");
     const submitBtn = document.getElementById("submit-btn");
     const resetBtn = document.getElementById("reset-btn");
     const printBtn = document.getElementById("print-btn");
+    const printDownloadBtn = document.getElementById("print-download");
+
     const deleteBtns = document.querySelectorAll('[id^="delete-btn"]');
     const selectBtns = document.querySelectorAll('[id^="select-session"]');
+
     let newSessions = [];
     let selectedSessions = [];
     let sessionsToDelete = [];
     let canSendRequest = true
+
+    let isMouseOverSaveBtn = false; 
+    let isMouseOverRedoBtn = false;
+    let isMouseOverSubmitBtn = false;
+    let isMouseOverDownloadBtn = false;
+    let isMouseOverPrintBtn = false;
+
     disableSaveBtn();
     disableResetBtn();
     disableDeleteButtons()
+    if (!isSubmitted) {
+        enableSubmitBtn();
+    } else {
+        disableSubmitBtn();
+    }
 
     for (let i = 1; i <= nbSemaines; i++) {
         selectedSessions.push([]);
@@ -251,6 +305,59 @@ enseignant{% endblock %} {% block content %}
 
 
     // ___________________________________________________ Event Listeners ___________________________________________________
+
+    saveBtn.addEventListener('mouseenter', () => {
+      isMouseOverSaveBtn = true;
+      setTimeout(() => {
+        if(isMouseOverSaveBtn) document.getElementById('save-text').classList.remove('hidden')
+      }, 500)
+    })
+    saveBtn.addEventListener('mouseleave', () => {
+      isMouseOverSaveBtn = false;
+      document.getElementById('save-text').classList.add('hidden')
+    })
+    resetBtn.addEventListener('mouseenter', () => {
+      isMouseOverRedoBtn = true;
+      setTimeout(() => {
+        if(isMouseOverRedoBtn) document.getElementById('redo-text').classList.remove('hidden')
+      }, 500)
+    })
+    resetBtn.addEventListener('mouseleave', () => {
+      isMouseOverRedoBtn = false;
+      document.getElementById('redo-text').classList.add('hidden')
+    })
+
+
+    submitBtn.addEventListener('mouseenter', () => {
+        isMouseOverSubmitBtn = true;
+        setTimeout(() => {
+            if(isMouseOverSubmitBtn) document.getElementById('submit-text').classList.remove('hidden')
+        }, 500)
+    })
+    submitBtn.addEventListener('mouseleave', () => {
+        document.getElementById('submit-text').classList.add('hidden')
+        isMouseOverSubmitBtn = false;
+    })
+    printBtn.addEventListener('mouseenter', () => {
+        isMouseOverPrintBtn = true;
+        setTimeout(() => {
+            if(isMouseOverPrintBtn) document.getElementById('print-text').classList.remove('hidden')
+        }, 500)
+    })
+    printBtn.addEventListener('mouseleave', () => {
+        document.getElementById('print-text').classList.add('hidden')
+        isMouseOverPrintBtn = false;
+    })
+    printDownloadBtn.addEventListener('mouseenter', () => {
+        isMouseOverDownloadBtn = true;
+        setTimeout(() => {
+            if(isMouseOverDownloadBtn) document.getElementById('download-text').classList.remove('hidden')
+        }, 500)
+    })
+    printDownloadBtn.addEventListener('mouseleave', () => {
+        document.getElementById('download-text').classList.add('hidden')
+        isMouseOverDownloadBtn = false;
+    })
 
     for (let i = 0; i < selectBtns.length; i++) {
         selectBtns[i].addEventListener("click", () => {
@@ -306,6 +413,7 @@ enseignant{% endblock %} {% block content %}
                 enableSaveBtn();
                 enableResetBtn();
                 disableSubmitBtn();
+                disableDeleteButton(i);
             });
             confirmDeleteBtn.addEventListener("click", () => {
                 document.getElementById("bg-dialogue").classList.add("hidden");
@@ -512,6 +620,7 @@ enseignant{% endblock %} {% block content %}
                     document.getElementById('success-dialogue').classList.add('hidden')
                     dialogueBG.classList.add('hidden')
                 })
+                disableSubmitBtn()
             })
             .catch(error => {
                 console.error('Err:', error)
