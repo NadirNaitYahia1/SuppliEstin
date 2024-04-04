@@ -615,6 +615,24 @@ class TabMois(models.Model):
             raise ValidationError("Le nombre de minutes supplémentaires doit être compris entre 0 et 59")
         super().save(*args, **kwargs)
 
+    def save_data(data): 
+        bdd = []
+        if data: 
+            for item in data: 
+                print('id:', item['id'])
+                obj = TabMois.objects.filter(idEnseignat=item['id']).first() # Récupère le premier objet filtré
+                if obj:   
+                    obj.heursSupps = item['nbHeursSupp']
+                    obj.save()   
+                    bdd.append(obj)
+                    print(obj)
+                else:
+                    print(f"Aucun objet trouvé avec l'ID {item['id']}")
+        print('bdd')
+        print(bdd)
+
+
+            
         
 
     def get_heursSupps(listEnseignants, idMois):

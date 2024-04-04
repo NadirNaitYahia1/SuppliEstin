@@ -71,9 +71,26 @@ def get_months_anneeUnivs( ):
 
 def save(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        print('data')
-        print(data)
+        print('-----------IM HERE -------------------')
+        data = request.body
+        parsed_data = json.loads(data)
+        cleaned_data = []
+        for item in parsed_data['data']:
+            if item['edited']:
+                cleaned_item = {
+                    'id': int(item['id']),
+                    'nbHeursSupp': int(item['nbHeursSupp']),
+                    'edited':int(item['edited'])
+                }
+                cleaned_data.append(cleaned_item)
+
+        if cleaned_data:
+            print('cleaned_data')
+            print(cleaned_data)
+            response = TabMois.save_data(cleaned_data)
+            print('')
+
+            
 
 
 

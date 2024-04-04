@@ -58,6 +58,8 @@
 
     
         <div class='icons '>
+            
+            
             <button  class="font-semibold text-gray-700 rounded-lg text-lg hover:text-blue-600 relative modifier-button"  name="modifier"   >
                 <i class="fa-solid fa-pen"></i>
             </button>
@@ -77,6 +79,7 @@
 
     </div>
 
+    
     
     <style>
         @media print {
@@ -159,6 +162,7 @@
         max-height: 90%;  
         overflow-y: auto;  
         }
+ 
     </style>
 
     <div class="mt-8 pb-36 cachet">
@@ -173,6 +177,12 @@
         </div>
     </div>
 
+    <style>
+        .noDisplay{
+            display: none;
+
+        }
+    </style>
 
     <script>
 
@@ -267,10 +277,12 @@
         const printButton = document.querySelector('button[name="print"]');
 
         printButton.addEventListener('click', function() {
+
             const tableContainer = document.getElementById("table-container");
             const teacherTable = document.getElementById("teacher-table");
             tableContainer.classList.remove("scrollable-table");
             teacherTable.classList.remove("table-container");
+
             print();
             setTimeout(function() {
                 tableContainer.classList.add("scrollable-table");
@@ -279,52 +291,43 @@
         });
 
     });
-
 // fonctionnalité de modification :
-    document.addEventListener("DOMContentLoaded", function() {
-        const modifierButton = document.querySelector('.modifier-button');
+const modifierButton = document.querySelector('.modifier-button');
+const saveButton = document.querySelector('button[name="save"]');
 
-        modifierButton.addEventListener('click', function() {
-            const modefiableCells = document.querySelectorAll('.toModify');
+modifierButton.addEventListener('click', function() {
+    const modefiableCells = document.querySelectorAll('.toModify');
+    modifierButton.classList.add('noDisplay');
+    saveButton.classList.remove('noDisplay');
 
-            modefiableCells.forEach(function(cell) {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.value = cell.textContent.trim();  
-                cell.textContent = '';
-                cell.appendChild(input);
-            });
-        });
+    modefiableCells.forEach(function(cell) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = cell.textContent.trim();
+        cell.appendChild(input);
     });
-
-// Fonctionnalité de sauvegarde des modifications
-    const saveButton = document.querySelector('save');
+});
 
 saveButton.addEventListener('click', function() {
-    console.log('im here ')
-    const modifiedRows = document.querySelectorAll('.modefiable');
-    console.log(modifiedRows);
-    const data = [];  
-
-    modifiedRows.forEach(function(row) {
-        const inputs = row.querySelectorAll('input[type="text"]');
-        const rowData = {};  
-        
-        inputs.forEach(function(input) {
-            const columnName = input.parentElement.getAttribute('data-column-name');
-            const columnValue = input.value;
-            rowData[columnName] = columnValue;   
-        });
-
-        data.push(rowData); 
+    const modefiableCells = document.querySelectorAll('.toModify');
+    const data = [];
+    modefiableCells.forEach(function(cell) {
+        const input = cell.querySelector('input');
+        let edited = 0;
+        if (input.value !== cell.textContent.trim()) {
+            edited = 1;  
+        }
+        data.push({'id': cell.parentElement.children[0].textContent, 'nbHeursSupp': input.value, 'edited': edited});
+        cell.textContent = input.value; 
     });
 
-    // Envoyer les données modifiées au serveur pour sauvegarde
+    saveButton.classList.add('noDisplay');
+    modifierButton.classList.remove('noDisplay');
     fetch('/fiche-heurs-supps/save/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}', 
+            'X-CSRFToken': '{{ csrf_token }}',
         },
         body: JSON.stringify({ data: data }),
     })
@@ -340,6 +343,14 @@ saveButton.addEventListener('click', function() {
         console.error('Une erreur s\'est produite lors de la sauvegarde des données:', error);
     });
 });
+
+ 
+
+
+
+
+    
+
 
 </script>
 
