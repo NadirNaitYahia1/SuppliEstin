@@ -28,31 +28,61 @@ enseignant{% endblock %} {% block content %}
     <div
     class="w-[80%] p-6 my-auto border-double border-black border-4 mx-auto rounded-lg flex flex-col justify-center items-center"
     >
-        <p>Fiche de Suivi des Heures Supplimentaire</p>
+        <p>Fiche de Suivi des Heures Supplimentaires</p>
         <p>Mois: <span class="font-semibold">{{ month }}</span></p>  
     </div>
   </div>
 </section>
 
 <div class="flex justify-end px-[5%] w-full text-xl gap-8 text-gray-700">
-    <button id="reset-btn">
+    <button class="relative" id="reset-btn">
         <i class="fas fa-redo-alt"></i>
+        <div
+                class="bg-yellow-100 border border-black absolute text-sm text-black top-4 right-3 px-1 hidden"
+                id="redo-text"
+              >
+                réinitialiser
+              </div>
     </button>
-    <button id="save-btn">
+    <button class="relative" id="save-btn">
         <i class="fas fa-save"></i>
+        <div
+                class="bg-yellow-100 border border-black absolute text-sm text-black top-4 right-3 px-1 hidden"
+                id="save-text"
+              >
+                sauvegarder
+              </div>
     </button>
-    <button id="submit-btn">
+    <button class="relative" id="submit-btn">
         <i class="fa-solid fa-paper-plane"></i>
+        <div
+                class="bg-yellow-100 border border-black absolute text-sm text-black top-4 right-3 px-1 hidden"
+                id="submit-text"
+              >
+                soumettre
+              </div>
     </button>
-    <button id="print-btn">
+    <button class="relative" id="print-btn">
         <i class="fa-solid fa-print"></i>
+        <div
+                class="bg-yellow-100 border border-black absolute text-sm text-black top-4 right-3 px-1 hidden"
+                id="print-text"
+              >
+                imprimer
+              </div>
     </button>
-    <button id="print-download">
+    <button class="relative" id="print-download">
         <i class="fa-solid fa-download"></i>
+        <div
+                class="bg-yellow-100 border border-black absolute text-sm text-black top-4 right-3 px-1 hidden"
+                id="download-text"
+              >
+                télécharger
+              </div>
     </button>
 </div>
 
-<section class="px-[5%] felx flex-col items-center gap-[50px] pb-[100px]">
+<section class="px-[5%] felx flex-col items-center gap-[50px] pb-[40px]">
     {% for semaine in semaines %}
         <div class="flex flex-col items-center my-10 gap-4" id="semaine-container">
             <div class="w-full flex justify-center">
@@ -75,30 +105,393 @@ enseignant{% endblock %} {% block content %}
                     <div class="flex items-center justify-center py-[2px]">Nombre d'heurs</div>
                 </div>
                 {% for session in semaine.sessions %}
-                    <div class="grid grid-cols-5 gap-x-[2px] font-semibold">
+                    <div class="grid grid-cols-5 gap-x-[2px] font-semibold relative">
+                        <p class="hidden" id="session-id">{{session.7}}</p>
+                        <p class="hidden" id="week-number">{{session.0}}</p>
                         <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.1}}</div>
                         <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.2}}</div>
                         <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.3}}</div>
                         <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.4}}</div>
                         <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.5}}h {{session.6}}min</div>
+                        <div class="absolute left-2 h-full flex items-center">
+                            <button class="w-3 h-3 border border-gray-800 rounded-sm flex items-center justify-center text-blue-600 text-sm" id="select-session-{{session.7}}">
+                            </button>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
     {% endfor %}
 </section>
+<!-- ______________________________________________ Dialogues ___________________________________________________ -->
+<div class="bg-black fixed top-0 left-0 right-0 bottom-0 opacity-40 z-20 hidden" id="bg-dialogue">
+</div>
+<div
+    class="fixed left-[50%] top-[50%] translate-x-[-50%] bg-white
+    translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+    animated-dialogue hidden
+    "
+    id="reset-dialogue"
+    >
+    <div class="w-full h-full flex flex-col items-center justify-between gap-10">
+        <h3 class="text-xl font-semibold text-center">Voulez vous vraiment annuler vos changements ?</h3>
+        <div class="flex flex-row justify-center items-center gap-10 w-full">
+        <button
+            class="text-blue-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="confirm-reset-btn"
+            type="button"
+        >
+            Oui
+        </button>
+        <button
+            class="text-red-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="cancel-reset-btn"
+            type="button"
+        >
+            Non
+        </button>
+        </div>
+    </div>
+</div>
+<div
+    class="fixed left-[50%] top-[50%] translate-x-[-50%] bg-white
+    translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+    animated-dialogue hidden 
+    "
+    id="save-dialogue"
+    >
+    <div class="w-full h-full flex flex-col items-center justify-between gap-10">
+        <h3 class="text-xl font-semibold text-center">Voulez vous vraiment sauvegarder vos changements ?</h3>
+        <div class="flex flex-row justify-center items-center gap-10 w-full">
+        <button
+            class="text-blue-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="confirm-save-btn"
+            type="button"
+        >
+            Oui
+        </button>
+        <button
+            class="text-red-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="cancel-save-btn"
+            type="button"
+        >
+            Non
+        </button>
+        </div>
+    </div>
+</div>
+<div class="fixed left-[50%] top-[50%] translate-x-[-50%] bg-white
+      translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+      animated-dialogue hidden"
+      id="success-dialogue"
+    >
+</div>
+<div
+    class="fixed left-[50%] top-[50%] translate-x-[-50%] bg-white
+    translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+    animated-dialogue hidden 
+    "
+    id="submit-dialogue"
+    >
+    <div class="w-full h-full flex flex-col items-center justify-between gap-10">
+        <h3 class="text-xl font-semibold text-center">Voulez vous vraiment soumettre vos heurs supplémentaires ?</h3>
+        <div class="flex flex-row justify-center items-center gap-10 w-full">
+        <button
+            class="text-blue-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="confirm-submit-btn"
+            type="button"
+        >
+            Oui
+        </button>
+        <button
+            class="text-red-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="cancel-submit-btn"
+            type="button"
+        >
+            Non
+        </button>
+        </div>
+    </div>
+</div>
+<div
+    class="fixed left-[50%] top-[50%] translate-x-[-50%] bg-white
+    translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+    animated-dialogue hidden 
+    "
+    id="delete-dialogue"
+    >
+    <div class="w-full h-full flex flex-col items-center justify-between gap-10">
+        <h3 class="text-xl font-semibold text-center">Voulez vous vraiment soumettre vos heurs supplémentaires ?</h3>
+        <div class="flex flex-row justify-center items-center gap-10 w-full">
+        <button
+            class="text-blue-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="confirm-delete-btn"
+            type="button"
+        >
+            Oui
+        </button>
+        <button
+            class="text-red-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="cancel-delete-btn"
+            type="button"
+        >
+            Non
+        </button>
+        </div>
+    </div>
+</div>
+
+<!-- Displaying the total hours of the month -->
+
+<section class="flex flex-row justify-end px-[100px] items-center gap-5 pb-[40px]">
+    <h4 class="text-xl font-semibold">
+        Total des heures supplémentaires sauvegardées: <span class="text-blue-600">{{ heursSupps }}h {{ minutesSupps }}min</span>
+    </h4>
+</section>
+
+<style>
+    .animated-dialogue {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+        opacity: 0;
+        }
+        to {
+        opacity: 1;
+        }
+    }
+    .disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+</style>
 <script>
     const nbSemaines = parseInt("{{ nbSemaines }}");
-    const newSessions = [];
+    const isSubmitted = "{{ is_submited }}" == "True";
+    const saveBtn = document.getElementById("save-btn");
+    const submitBtn = document.getElementById("submit-btn");
+    const resetBtn = document.getElementById("reset-btn");
+    const printBtn = document.getElementById("print-btn");
+    const printDownloadBtn = document.getElementById("print-download");
+
+    const deleteBtns = document.querySelectorAll('[id^="delete-btn"]');
+    const selectBtns = document.querySelectorAll('[id^="select-session"]');
+
+    let newSessions = [];
+    let selectedSessions = [];
+    let sessionsToDelete = [];
+    let canSendRequest = true
+
+    let isMouseOverSaveBtn = false; 
+    let isMouseOverRedoBtn = false;
+    let isMouseOverSubmitBtn = false;
+    let isMouseOverDownloadBtn = false;
+    let isMouseOverPrintBtn = false;
+
+    disableSaveBtn();
+    disableResetBtn();
+    disableDeleteButtons()
+    if (!isSubmitted) {
+        enableSubmitBtn();
+    } else {
+        disableSubmitBtn();
+    }
+
+    for (let i = 1; i <= nbSemaines; i++) {
+        selectedSessions.push([]);
+    }
+
+
+    // ___________________________________________________ Event Listeners ___________________________________________________
+
+    saveBtn.addEventListener('mouseenter', () => {
+      isMouseOverSaveBtn = true;
+      setTimeout(() => {
+        if(isMouseOverSaveBtn) document.getElementById('save-text').classList.remove('hidden')
+      }, 500)
+    })
+    saveBtn.addEventListener('mouseleave', () => {
+      isMouseOverSaveBtn = false;
+      document.getElementById('save-text').classList.add('hidden')
+    })
+    resetBtn.addEventListener('mouseenter', () => {
+      isMouseOverRedoBtn = true;
+      setTimeout(() => {
+        if(isMouseOverRedoBtn) document.getElementById('redo-text').classList.remove('hidden')
+      }, 500)
+    })
+    resetBtn.addEventListener('mouseleave', () => {
+      isMouseOverRedoBtn = false;
+      document.getElementById('redo-text').classList.add('hidden')
+    })
+
+
+    submitBtn.addEventListener('mouseenter', () => {
+        isMouseOverSubmitBtn = true;
+        setTimeout(() => {
+            if(isMouseOverSubmitBtn) document.getElementById('submit-text').classList.remove('hidden')
+        }, 500)
+    })
+    submitBtn.addEventListener('mouseleave', () => {
+        document.getElementById('submit-text').classList.add('hidden')
+        isMouseOverSubmitBtn = false;
+    })
+    printBtn.addEventListener('mouseenter', () => {
+        isMouseOverPrintBtn = true;
+        setTimeout(() => {
+            if(isMouseOverPrintBtn) document.getElementById('print-text').classList.remove('hidden')
+        }, 500)
+    })
+    printBtn.addEventListener('mouseleave', () => {
+        document.getElementById('print-text').classList.add('hidden')
+        isMouseOverPrintBtn = false;
+    })
+    printDownloadBtn.addEventListener('mouseenter', () => {
+        isMouseOverDownloadBtn = true;
+        setTimeout(() => {
+            if(isMouseOverDownloadBtn) document.getElementById('download-text').classList.remove('hidden')
+        }, 500)
+    })
+    printDownloadBtn.addEventListener('mouseleave', () => {
+        document.getElementById('download-text').classList.add('hidden')
+        isMouseOverDownloadBtn = false;
+    })
+
+    for (let i = 0; i < selectBtns.length; i++) {
+        selectBtns[i].addEventListener("click", () => {
+            const sessionID = selectBtns[i].parentElement.parentElement.children[0].innerText;
+            const weekNumber = parseInt(selectBtns[i].parentElement.parentElement.children[1].innerText) -1;
+            if (selectedSessions[weekNumber].includes(sessionID)) {
+                const siblings = selectBtns[i].parentNode.parentNode.children;
+                for (let i = 0; i < siblings.length; i++) {
+                    siblings[i].classList.remove("bg-orange-200");
+                }
+                selectBtns[i].innerHTML = "";
+                selectedSessions[weekNumber] = selectedSessions[weekNumber].filter(session => session !== sessionID);
+                if (selectedSessions[weekNumber].length === 0) {
+                    disableDeleteButton(weekNumber+1);
+                }
+            } else {
+                selectBtns[i].innerHTML = "<i class='fa-solid fa-check'></i>";
+                if (selectedSessions[weekNumber].length === 0) {
+                    enableDeleteButton(weekNumber+1);
+                }
+                const siblings = selectBtns[i].parentNode.parentNode.children;
+                for (let i = 0; i < siblings.length; i++) {
+                    siblings[i].classList.add("bg-orange-200");
+                }
+                selectedSessions[weekNumber].push(sessionID);
+                console.log("selectedSessions", selectedSessions);
+            }
+        });
+    }
+
+    for (let i = 1, len = deleteBtns.length; i <= len; i++) {
+        deleteBtns[i-1].addEventListener("click", () => {
+            document.getElementById("bg-dialogue").classList.remove("hidden");
+            document.getElementById("delete-dialogue").classList.remove("hidden");
+            const confirmDeleteBtn = document.getElementById("confirm-delete-btn");
+            const cancelDeleteBtn = document.getElementById("cancel-delete-btn");
+            confirmDeleteBtn.addEventListener("click", () => {
+                for (let j = 0; j < selectedSessions[i-1].length; j++) {
+                    if (!sessionsToDelete.includes(selectedSessions[i-1][j])) {
+                        sessionsToDelete.push(selectedSessions[i-1][j]);
+                        const session = document.getElementById(`select-session-${selectedSessions[i-1][j]}`).parentNode.parentNode;
+                        for (let k = 0; k < session.children.length; k++) {
+                            session.children[k].classList.remove("bg-orange-200");
+                            session.children[k].classList.add("bg-red-200");
+                        }
+                        document.getElementById(`select-session-${selectedSessions[i-1][j]}`).remove();
+                    }
+                }
+                selectedSessions[i-1] = [];
+                console.log("sessionsToDelete", sessionsToDelete);
+                document.getElementById("bg-dialogue").classList.add("hidden");
+                document.getElementById("delete-dialogue").classList.add("hidden");
+                enableSaveBtn();
+                enableResetBtn();
+                disableSubmitBtn();
+                disableDeleteButton(i);
+            });
+            confirmDeleteBtn.addEventListener("click", () => {
+                document.getElementById("bg-dialogue").classList.add("hidden");
+                document.getElementById("reset-dialogue").classList.add("hidden");
+            });
+        });
+    }
+
     for (let i = 1; i <= nbSemaines; i++) {
         newSessions.push([]);
     }
+    saveBtn.addEventListener("click", () => {
+        document.getElementById("bg-dialogue").classList.remove("hidden");
+        document.getElementById("save-dialogue").classList.remove("hidden");
+        const confirmSaveBtn = document.getElementById("confirm-save-btn");
+        const cancelSaveBtn = document.getElementById("cancel-save-btn");
+        if (canSendRequest){
+            confirmSaveBtn.addEventListener("click", () =>{
+                disableSaveBtn();
+                disableResetBtn();
+                enableSubmitBtn();
+                document.getElementById("bg-dialogue").classList.add("hidden");
+                document.getElementById("save-dialogue").classList.add("hidden");
+                const data = {
+                    'newSessions': newSessions,
+                    'sessionsToDelete': sessionsToDelete
+                }
+                fetch("", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify(data)
+                }).then(response => response.json())
+                .then(data => {
+                document.getElementById('save-dialogue').classList.add('hidden')
+                document.getElementById('bg-dialogue').classList.add('hidden')
+                setTimeout(() => {
+                document.getElementById('success-dialogue').classList.remove('hidden')
+                document.getElementById('success-dialogue').innerHTML = `
+                    <h3 class="text-xl font-semibold text-center mb-10">${data.message}</h3>
+                    <span class="text-[50px] text-green-500 w-full flex justify-center">
+                    <i class="fa fa-check"></i>
+                    </span>
+                `
+                const dialogueBG = document.getElementById('bg-dialogue')
+                dialogueBG.classList.remove('hidden')
+                dialogueBG.addEventListener('click', () => {
+                    document.getElementById('success-dialogue').classList.add('hidden')
+                    document.getElementById('save-dialogue').classList.add('hidden')
+                    dialogueBG.classList.add('hidden')
+                })
+                }, 500)
+                newSessions = []
+                for (let i = 1; i <= nbSemaines; i++) {
+                    newSessions.push([]);
+                }
+                console.log("reinitialized newSessions", newSessions);
+            })
+            .catch(error => {
+                console.error('Err:', error)
+            })
+            canSendRequest = false
+        })} else {
+            canSendRequest = true
+        }
+        cancelSaveBtn.addEventListener("click", () => {
+            document.getElementById("bg-dialogue").classList.add("hidden");
+            document.getElementById("save-dialogue").classList.add("hidden");
+        })
+    })
     for (let i = 1; i <= nbSemaines; i++) {
         document.getElementById(`add-btn${i}`).addEventListener("click", () => {
             disableAddBtns();
             const semainesList = document.getElementById(`semaines-list${i}`);
             semainesList.innerHTML += `
-                <div class="grid grid-cols-5 gap-x-[2px] font-semibold relative" id="new-session-form">
+                <div class="grid grid-cols-5 gap-x-[2px] font-semibold relative" id="new-session-form${i-1}">
                     <p class="hidden" id='new-nb-semaine'>${i-1}</p>
                     <input class="flex items-center justify-center py-[2px] bg-green-200 border-none" type='date' id='new-session-date'/>
                     <input class="flex items-center justify-center py-[2px] bg-green-200 border-none" type='time' id='new-session-start'/>
@@ -111,39 +504,61 @@ enseignant{% endblock %} {% block content %}
                     </select>
                     <div class="flex items-center justify-center py-[2px] bg-green-200 relative" id='new-session-heurs'>
                         
-                        <button class="absolute right-4 text-blue-700" id="save-new-session">
+                        <button class="absolute right-4 text-blue-700" id="save-new-session${i-1}">
                             <i class="fa-regular fa-bookmark"></i>
                         </button>
+                        <button class="absolute right-10" id="cancel-new-session">
+                            <i class="fa-solid fa-xmark text-red-500"></i>
+                        </button>
                     </div>
+                    <p class="absolute bottom-[-30px] text-sm font-medium text-red-500 hidden bg-white" id="new-session-alert">
+                        Remplissez tous les champs s'il vous plait !
+                    </p>
                 </div>
-                <p class="absolute bottom-[-30px] text-sm font-medium text-red-500 hidden" id="new-session-alert">
-                    Remplissez tous les champs s'il vous plait !
-                </p>
                 `
             
-            const saveNewSessionBtn = document.getElementById("save-new-session");
+            const saveNewSessionBtn = document.getElementById(`save-new-session${i-1}`);
+            const cancelNewSessionBtn = document.getElementById("cancel-new-session");
+            cancelNewSessionBtn.addEventListener("click", () => {
+                document.getElementById(`new-session-form${i-1}`).remove();
+                enableAddBtns();
+            });
             document.getElementById("new-session-date").addEventListener("input", () => {
-                    disableAlertFieldsEmpty();
+                    disableAlertFieldsEmpty(i-1);
                 });
                 document.getElementById("new-session-start").addEventListener("input", () => {
-                    disableAlertFieldsEmpty();
+                    disableAlertFieldsEmpty(i-1);
                 });
                 document.getElementById("new-session-end").addEventListener("input", () => {
-                    disableAlertFieldsEmpty();
+                    disableAlertFieldsEmpty(i-1);
                 });
             saveNewSessionBtn.addEventListener("click", () => {
                 if (document.getElementById("new-session-date").value === "" || document.getElementById("new-session-start").value === "" || document.getElementById("new-session-end").value === "") {
-                    alertFieldsEmpty();
+                    alertFieldsEmpty(i-1);
                     return;
                 }
                 const date = document.getElementById("new-session-date").value;
                 const start = document.getElementById("new-session-start").value;
                 const end = document.getElementById("new-session-end").value;
                 const type = document.getElementById("new-session-type").value;
-                const heurs = document.getElementById("new-session-heurs").innerText;
                 const semaine = parseInt(document.getElementById("new-nb-semaine").innerText)
-                newSessions[semaine].push({date:date, start:start, end:end, type:type, heurs:heurs});
-                document.getElementById("new-session-form").remove();
+                let heurs = 0;
+                let minutes = 0;
+                if (type === "Cours") {
+                    heurs = 2;
+                    minutes = 0;
+                } else if (type === "TD") {
+                    heurs = 1;
+                    minutes = 30;
+                } else if (type === "TP") {
+                    heurs = 1;
+                    minutes = 8;
+                } else {
+                    heurs = 2;
+                    minutes = 0;
+                }
+                newSessions[semaine].push({date:date, start:start, end:end, type:type, heurs:heurs, minutes:minutes});
+                document.getElementById(`new-session-form${i-1}`).remove();
                 enableAddBtns();
                 semainesList.innerHTML += `
                 <div class="grid grid-cols-5 gap-x-[2px] font-semibold" id="add-session-${semaine}-${newSessions.length-1}">
@@ -151,27 +566,90 @@ enseignant{% endblock %} {% block content %}
                     <div class="flex items-center justify-center py-[2px] bg-blue-200">${start}</div>
                     <div class="flex items-center justify-center py-[2px] bg-blue-200">${end}</div>
                     <div class="flex items-center justify-center py-[2px] bg-blue-200">${type}</div>
-                    <div class="flex items-center justify-center py-[2px] bg-blue-200">1h 8min</div>
+                    <div class="flex items-center justify-center py-[2px] bg-blue-200">${heurs}h ${minutes}min</div>
                 </div>
                 `
-                console.log(newSessions);
+                enableResetBtn()
+                enableSaveBtn();
+                disableSubmitBtn();
             });
         });
     }
 
-    function alertFieldsEmpty() {
+    resetBtn.addEventListener("click", () => {
+        document.getElementById("bg-dialogue").classList.remove("hidden");
+        document.getElementById("reset-dialogue").classList.remove("hidden");
+        const confirmResetBtn = document.getElementById("confirm-reset-btn");
+        const cancelResetBtn = document.getElementById("cancel-reset-btn");
+        confirmResetBtn.addEventListener("click", () =>{
+            window.location.reload();
+        })
+        cancelResetBtn.addEventListener("click", () => {
+            document.getElementById("bg-dialogue").classList.add("hidden");
+            document.getElementById("reset-dialogue").classList.add("hidden");
+        })
+    });
+
+    submitBtn.addEventListener("click", () => {
+        document.getElementById("bg-dialogue").classList.remove("hidden");
+        document.getElementById("submit-dialogue").classList.remove("hidden");
+        const confirmSubmitBtn = document.getElementById("confirm-submit-btn");
+        const cancelSubmitBtn = document.getElementById("cancel-submit-btn");
+        confirmSubmitBtn.addEventListener("click", () =>{
+            document.getElementById("bg-dialogue").classList.add("hidden");
+            document.getElementById("submit-dialogue").classList.add("hidden");
+            fetch("submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({submit: true})
+            }).then(response => response.json())
+            .then(data => {
+                document.getElementById('success-dialogue').classList.remove('hidden')
+                document.getElementById('success-dialogue').innerHTML = `
+                    <h3 class="text-xl font-semibold text-center mb-10">${data.message}</h3>
+                    <span class="text-[50px] text-green-500 w-full flex justify-center">
+                    <i class="fa fa-check"></i>
+                    </span>
+                `
+                const dialogueBG = document.getElementById('bg-dialogue')
+                dialogueBG.classList.remove('hidden')
+                dialogueBG.addEventListener('click', () => {
+                    document.getElementById('success-dialogue').classList.add('hidden')
+                    dialogueBG.classList.add('hidden')
+                })
+                disableSubmitBtn()
+            })
+            .catch(error => {
+                console.error('Err:', error)
+            })
+        })
+        cancelSubmitBtn.addEventListener("click", () => {
+            document.getElementById("bg-dialogue").classList.add("hidden");
+            document.getElementById("submit-dialogue").classList.add("hidden");
+        })
+    
+    })
+
+
+    // ___________________________________________________ Helper Functions ___________________________________________________
+
+
+    function alertFieldsEmpty(i) {
         document.getElementById("new-session-alert").classList.remove("hidden");
-        document.getElementById("save-new-session").classList.add("hidden");
-        const children = document.getElementById("new-session-form").children;
+        document.getElementById(`save-new-session${i}`).classList.add("hidden");
+        const children = document.getElementById(`new-session-form${i}`).children;
         for (let i = 0; i < children.length; i++) {
             children[i].classList.add("bg-red-200");
         }
     }
 
-    function disableAlertFieldsEmpty() {
+    function disableAlertFieldsEmpty(i) {
         document.getElementById("new-session-alert").classList.add("hidden");
-        document.getElementById("save-new-session").classList.remove("hidden");
-        const children = document.getElementById("new-session-form").children;
+        document.getElementById(`save-new-session${i}`).classList.remove("hidden");
+        const children = document.getElementById(`new-session-form${i}`).children;
         for (let i = 0; i < children.length; i++) {
             children[i].classList.remove("bg-red-200");
         }
@@ -191,6 +669,73 @@ enseignant{% endblock %} {% block content %}
             btn.classList.remove("text-gray-300");
         }
     }
+
+   
+    function disableSaveBtn() {
+        saveBtn.disabled = true;
+        saveBtn.classList.add("text-gray-300");
+        saveBtn.classList.add("cursor-default");
+    }
+
+    function enableSaveBtn() {
+        saveBtn.disabled = false;
+        saveBtn.classList.remove("text-gray-300");
+        saveBtn.classList.remove("cursor-default");
+    }
+
+    function disableResetBtn() {
+        resetBtn.disabled = true;
+        resetBtn.classList.add("text-gray-300");
+        resetBtn.classList.add("cursor-default");
+    }
+
+    function enableResetBtn() {
+        resetBtn.disabled = false;
+        resetBtn.classList.remove("text-gray-300");
+        resetBtn.classList.remove("cursor-default");
+    }
+
+    function disableSubmitBtn() {
+        submitBtn.disabled = true;
+        submitBtn.classList.add("text-gray-300");
+        submitBtn.classList.add("cursor-default");
+    }
+
+    function enableSubmitBtn() {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("text-gray-300");
+        submitBtn.classList.remove("cursor-default");
+    }
+
+    function disableDeleteButtons() {
+        for (let i = 1; i <= nbSemaines; i++) {
+            const btn = document.getElementById(`delete-btn${i}`);
+            btn.disabled = true;
+            btn.classList.add("text-gray-300");
+        }
+    }
+
+    function enableDeleteButtons() {
+        for (let i = 1; i <= nbSemaines; i++) {
+            const btn = document.getElementById(`delete-btn${i}`);
+            btn.disabled = false;
+            btn.classList.remove("text-gray-300");
+        }
+    }
+
+    function disableDeleteButton(i){
+        const btn = document.getElementById(`delete-btn${i}`);
+        btn.disabled = true;
+        btn.classList.add("text-gray-300");
+    }
+
+    function enableDeleteButton(i){
+        const btn = document.getElementById(`delete-btn${i}`);
+        btn.disabled = false;
+        btn.classList.remove("text-gray-300");
+    }
+
+    
 </script>
 {% endblock %}
 

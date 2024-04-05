@@ -1,7 +1,6 @@
 from django.urls import path
 from . import views
 
-# 
 urlpatterns = [
     path('', views.index, name='index'),
     path('set-months-by-admin/<str:year>/', views.set_months, name='set_months'),

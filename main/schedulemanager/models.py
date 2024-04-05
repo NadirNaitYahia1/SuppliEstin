@@ -21,6 +21,8 @@ from django_cleanup import cleanup
 import random
 import string
 from django.core.validators import FileExtensionValidator
+from django.http import JsonResponse
+from django.db import IntegrityError
 
 class CustomUserManager(UserManager):
     def get_by_natural_key(self, username):
@@ -573,6 +575,25 @@ class AdminMois(models.Model):
         return objAdminMois
     def get_months_anneeUnivs() :
         return AdminMois.objects.all()
+    
+    def get_idMois(nomMois,annee):
+        print('nomMois',nomMois)
+        print('annee',annee)
+        print('model')
+        try :
+            obj = AdminMois.objects.filter(nomMois=nomMois, anneeUniv=annee)
+            print('obj',obj )
+            return obj[0].idMois
+        except AdminMois.DoesNotExist:
+            objAdminMois = None
+            return objAdminMois
+ 
+
+
+
+
+
+
 
 # class VolumeAutorise(models.Model):
 #     idEnseignant  = models.ForeignKey('Enseignant', on_delete=models.CASCADE)
@@ -590,12 +611,13 @@ class AdminMois(models.Model):
 
 class TabMois(models.Model):
     idTabMois    = models.AutoField(primary_key=True)
-    idEnseignat  = models.OneToOneField('Enseignant', on_delete=models.CASCADE)
+    idEnseignat  = models.ForeignKey('Enseignant', on_delete=models.CASCADE)
     nomMois      = models.CharField(max_length=20)
     heursSupps   = models.IntegerField()
     minutesSupps  = models.IntegerField()
     idMois = models.ForeignKey('AdminMois', on_delete=models.CASCADE)
     isEditable = models.BooleanField(default=True)
+    soumis = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nomMois+" "+str(self.idMois.anneeUniv)+" "+str(self.idEnseignat)
@@ -606,7 +628,10 @@ class TabMois(models.Model):
     def set_notEditable(self):
         self.isEditable = False
         self.save()
-        
+    
+    def set_soumis(self):
+        self.soumis = True
+        self.save()
 
     def save(self, *args, **kwargs):
         if self.heursSupps < 0:
@@ -614,30 +639,29 @@ class TabMois(models.Model):
         if self.minutesSupps < 0 or self.minutesSupps > 59:
             raise ValidationError("Le nombre de minutes supplémentaires doit être compris entre 0 et 59")
         super().save(*args, **kwargs)
-
-    def save_data(data): 
+    
+    
+    def save_data(data, idMois): 
         bdd = []
-        if data: 
+        if data and idMois: 
             for item in data: 
-                print('id:', item['id'])
-                obj = TabMois.objects.filter(idEnseignat=item['id']).first() # Récupère le premier objet filtré
-                if obj:   
+                try:
+                    obj = TabMois.objects.get(idEnseignat=item['id'], idMois=idMois)
+                    # If the object exists, update it
                     obj.heursSupps = item['nbHeursSupp']
-                    obj.save()   
+                    obj.save()
                     bdd.append(obj)
-                    print(obj)
-                else:
-                    print(f"Aucun objet trouvé avec l'ID {item['id']}")
-        print('bdd')
-        print(bdd)
+                except TabMois.DoesNotExist:
+                    # If the object doesn't exist, create a new one
+                    obj = TabMois(idEnseignat_id=item['id'], heursSupps=item['nbHeursSupp'], minutesSupps=0, idMois_id=idMois)
+                    obj.save()
+                    bdd.append(obj)
+        return bdd
 
-
-            
-        
 
     def get_heursSupps(listEnseignants, idMois):
         arr =[]
-        allObjects = TabMois.objects.all()
+        allObjects = TabMois.objects.filter(idMois=idMois)
         for oneObject in allObjects: 
             for ens in listEnseignants: 
                 if oneObject.idEnseignat.id == ens.id: 

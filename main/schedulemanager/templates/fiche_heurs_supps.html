@@ -217,7 +217,7 @@
     button2.addEventListener("click", function() {
         changeColor(2);
     });
-
+// ________________________________________________________________________________________________
 // Ajouter la classe 'scrollable-table' si le tableau contient plus de 12 lignes
     document.addEventListener("DOMContentLoaded", function() {
         const teacherTable = document.getElementById("teacher-table");
@@ -229,6 +229,9 @@
     });
 
 
+
+
+// ________________________________________________________________________________________________
 // Filtrer les options de mois en fonction de l'année sélectionnée
     const selectYear = document.querySelector('select[name="selected_year"]');
     const selectMonth = document.querySelector('select[name="selected_month"]');
@@ -271,6 +274,7 @@
 
 
 
+// ________________________________________________________________________________________________
 
 // Fonctionnalité d'impression et de téléchargement 
     document.addEventListener("DOMContentLoaded", function() {
@@ -291,49 +295,65 @@
         });
 
     });
+
+// ________________________________________________________________________________________________
+
 // fonctionnalité de modification :
 const modifierButton = document.querySelector('.modifier-button');
 const saveButton = document.querySelector('button[name="save"]');
 
-modifierButton.addEventListener('click', function() {
-    const modefiableCells = document.querySelectorAll('.toModify');
-    modifierButton.classList.add('noDisplay');
-    saveButton.classList.remove('noDisplay');
+    modifierButton.addEventListener('click', function() {
+        const modefiableCells = document.querySelectorAll('.toModify');
+        modifierButton.classList.add('noDisplay');
+        saveButton.classList.remove('noDisplay');
 
-    modefiableCells.forEach(function(cell) {
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.value = cell.textContent.trim();
-        cell.appendChild(input);
+        modefiableCells.forEach(function(cell) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = cell.textContent.trim();
+            cell.appendChild(input);
+        });
     });
-});
 
 saveButton.addEventListener('click', function() {
     const modefiableCells = document.querySelectorAll('.toModify');
-    const data = [];
+    const selectYear = document.querySelector('select[name="selected_year"]');
+    const selectMonth = document.querySelector('select[name="selected_month"]');
+    console.log(selectYear.value, selectMonth.value)
+
+
+    const requestData = {
+    data: [],
+    year: selectYear.value,
+    month: selectMonth.value.split('-')[0]
+    };
     modefiableCells.forEach(function(cell) {
         const input = cell.querySelector('input');
         let edited = 0;
         if (input.value !== cell.textContent.trim()) {
             edited = 1;  
         }
-        data.push({'id': cell.parentElement.children[0].textContent, 'nbHeursSupp': input.value, 'edited': edited});
+        requestData.data.push({'id': cell.parentElement.children[0].textContent, 'nbHeursSupp': input.value, 'edited': edited });
         cell.textContent = input.value; 
+
     });
+
 
     saveButton.classList.add('noDisplay');
     modifierButton.classList.remove('noDisplay');
-    fetch('/fiche-heurs-supps/save/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}',
-        },
-        body: JSON.stringify({ data: data }),
-    })
+    
+ 
+    fetch(`/fiche-heurs-supps/save/`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}',
+    },
+    body: JSON.stringify({ requestData: requestData }),
+})
     .then(response => response.json())
-    .then(data => {
-        if (data.success) {
+    .then(requestData => {
+        if (requestData.success) {
             console.log('Les données ont été sauvegardées avec succès.');
         } else {
             console.error('La sauvegarde des données a échoué.');
