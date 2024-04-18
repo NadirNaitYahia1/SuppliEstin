@@ -101,12 +101,22 @@ def save(request):
             except:
             # Return a response indicating success
                 return JsonResponse({'error': 'Unsupported method'}, status=405)
-    
-        
+def sort_list_by_grade(lst):
+    GRADE_WEIGHTS = {
+        'MA': 1,
+        'MA.B': 2,
+        'MA.A': 3,
+        'MC': 4,
+        'MC.B': 5,
+        'MC.A': 6,
+        'PR': 7,
+        None: 0  # Assigning a weight of 0 for None grades
+    }
 
+    sorted_list = sorted(lst, key=lambda x: GRADE_WEIGHTS.get(x['grade'], 0), reverse=True)
+    return sorted_list
 
  
-
 def fiche_heurs_supps(request, type, year, month):
     list = []
     if type[0:1].upper() in ['V', 'P']:
@@ -114,6 +124,7 @@ def fiche_heurs_supps(request, type, year, month):
         
         if listEnseignants:
             objAdminMois = get_list_nb_semaines_mois_annee(year, month)
+            print('objAdminMois:', objAdminMois)
             nbSemainesMonthYear = objAdminMois[0].nbSemaines
 
             idMois = objAdminMois[0].idMois
@@ -125,9 +136,7 @@ def fiche_heurs_supps(request, type, year, month):
             for item in listMoisAnnee:
                 if item.anneeUniv.annee_univ not in [annee[0] for annee in anneeUnniv]:
                     mois_annee = [mois_item.nomMois for mois_item in listMoisAnnee if mois_item.anneeUniv.annee_univ == item.anneeUniv.annee_univ]
-                    anneeUnniv.append([item.anneeUniv.annee_univ, mois_annee])
-
-
+                    anneeUnniv.append([item.anneeUniv.annee_univ, mois_annee])  
 
             list =[]
             
@@ -147,21 +156,24 @@ def fiche_heurs_supps(request, type, year, month):
                         break; 
 
                 list.append(item)
-           
-          
+
+            # sort list by grade: professor mcb mca :
+            sorted_list=sort_list_by_grade(list)
+            print(list)
             context = {
                 'type': type, 
                 'year': year,
                 'month': month,
-                'list': list,
+                'list': sorted_list,
                 'anneeUnniv':   anneeUnniv ,
                 'nbSemainesMonthYear': nbSemainesMonthYear,
-        
             }
-            print('context',context["nbSemainesMonthYear"])
             return render(request, 'fiche_heurs_supps.html', context)
     else:   
         return HttpResponse('Type de professeur non valide : V pour vacataire et P pour permanent')
+
+ 
+
 
         
 # _________________________________________________________________________________________________________________________________________________________  

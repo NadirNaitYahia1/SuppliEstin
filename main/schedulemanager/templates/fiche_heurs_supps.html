@@ -1,22 +1,26 @@
-<div class="flex items-center mb-3 mt-10 ms-2  changeType">
-    <p>Enseignant</p>
-    <button class="btn1 bg-blue-950 rounded-md p-2 text-white mx-2">
-        Permanant
-    </button>
-    <button class="btn2 bg-blue-300 rounded-md p-2 text-white mx-2">
-        Vacataire
-    </button>
-</div> 
-
 {% extends 'header.html' %}
 {% block title %}{% endblock %}
 
 {% block content %}
-<body class="mx-auto w-[90%] border mb-10">
+ 
+
+    <!-- HTML content here -->
+
+    <!-- <div class="flex items-center mb-3 mt-10 ms-10  changeType">
+        <p>List des enseignants</p>
+        <button class="btn1 bg-blue-950 rounded-md p-2 text-white mx-2">
+            Permanant
+        </button>
+        <button class="btn2 bg-blue-300 rounded-md p-2 text-white mx-2">
+            Vacataire
+        </button>
+    </div>  -->
+
+<body class="mx-auto w-[90%] border 	  mt-10">
 
 
-    <div class='flex items-center mt-3'>
-        <p class=' w-[20%]'>Ref N:
+    <div class='flex items-center mt-5  '>
+        <p class=' w-[20%] ms-10'>Ref N:
             <input  placeholder='  ....... ' class='w-[20%] border text-center' ></input> ESTIN/2023
         </p>
 
@@ -32,13 +36,30 @@
         </div>
     </div>
        
-    <div class='mt-3'>
-        <p class="text-center">
-            Etat de service des heures complementaires <br/> Enseignants {% if type == 'permanant' %} Permanants {% else %} Vacataires {% endif %}  
-        </p>
+ 
+    
+       
+    <div class='mt-3 flex justify-center'>
+        <div>
+            <p class="text-center">Etat de service des heures complementaires Enseignants</p>
+            <div class="flex justify-center">
+                <select name="prof_type" id="prof_type" class=" border rounded-md py-3 text-center">
+                    <option value="Permanants" {% if type == 'Permanants' %} selected {% endif %}>
+                        Permanants
+                    </option>
+                    <option value="Vacataires" {% if type == 'Vacataires' %} selected {% endif %}>
+                        Vacataires
+                    </option>
+                    
+                </select>
+            </div>
+        </div>
     </div>
+ 
 
-    <div class='flex items-center justify-between mx-4 mb-2 '>
+    
+
+    <div class='flex items-center justify-between mx-4 mb-2  '>
         <form method="GET" >
             <div class='flex items-center'>
                 <select name="selected_year" class="border-none yearclass" >
@@ -76,96 +97,77 @@
                 <i class="fa-solid fa-download"></i>                    
             </button>                    
         </div>
+      
+      
+      
+      
+        <div
+            class="fixed left-[50%] top-[50%] translate-x-[-50%] bg-white
+            translate-y-[-50%] p-5 w-[500px] rounded-xl z-40
+            animated-dialogue hidden 
+            "
+            id="save-dialogue"
+        >
+        <div class="bg-black fixed top-0 left-0 right-0 bottom-0 opacity-40 z-20 hidden" id="bg-dialogue">
+</div>
+    <div class="w-full h-full flex flex-col items-center justify-between gap-10 border-4 rounded-md p-5">
+        <h3 class="text-xl font-semibold text-center">Voulez vous vraiment sauvegarder vos changements ?</h3>
+        <div class="flex flex-row justify-center items-center gap-10 w-full">
+        <button
+            class="text-blue-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="confirm-save-btn"
+            type="button"
+        >
+            Oui
+        </button>
+        <button
+            class="text-red-600 bg-gray-200 rounded-lg px-5 py-2 font-semibold"
+            id="cancel-save-btn"
+            type="button"
+        >
+            Non
+        </button>
+        </div>
+    </div>
+</div>
 
     </div>
 
-    
-    
-    <style>
-        @media print {
-            .icons {
-                display: none;
-            }
-            
-            body{
-                margin-top: 30px !important;
-          
-
-            }
-            .yearclass{
-                display: none;
-            }
-            .monthclass{
-                font-weight: bold;
-            }
-            select::-ms-expand {
-        display: none;
-    }
-    select {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        /* Utiliser une image transparente pour masquer la flèche de sélection */
-        background-image: url('../static/transparent.png');
-        background-repeat: no-repeat;
-        background-position: right center;
-        /* Ajuster la largeur de l'arrière-plan pour couvrir la flèche de sélection */
-        padding-right: 20px; /* Ajustez la valeur selon vos besoins */
-    }
-
-    title {
-        display: none;
-    }
-       
-    .changeType{
-        display: none;
-    }
-
-
-        }
-    </style>
-
-
-    <div id="table-container" class="table-container  mb-8">
-        <table class="w-full border mx-auto " id="teacher-table">
-            <thead class='text-col-3 '>
+    <div id="table-container" class="table-container mb-8 mx-2   border-2 border-slate-900">
+        <table class="w-full mx-auto border border-collapse" id="teacher-table">
+            <thead class="bg-gray-200">
                 <tr>
-                    <th>N°</th>
-                    <th>Nom & prénom</th>
-                    <th>Grade</th>
-                    <th>Module Enseigné</th>
-                    <th>Volume horaire autorisé</th>
-                    <th>Nombre de semaines</th>
-                    <th>Nombre d'heures Mensuelles</th>
+
+                    <th class="border px-4 py-2">N</th>
+                    <th class="border px-4 py-2">Nom & prénom</th>
+                    <th class="border px-4 py-2">Grade</th>
+                    <th class="border px-4 py-2">Module Enseigné</th>
+                    <th class="border px-4 py-2">Volume horaire autorisé</th>
+                    <th class="border px-4 py-2">Nombre de semaines</th>
+                    <th class="border px-4 py-2">Nombre d'heures Mensuelles</th>
                 </tr>
             </thead>
-        
+            
             <tbody>
                 {% for item in list %}
-                    <tr class="modefiable">
-                        <td class="text-center">{{ item.id }}</td>  
-                        <td class="text-center">{{ item.nom }} {{ item.prenom }}</td>
-                        <td class="text-center">{{ item.grade }}</td>
-                        <td class="text-center">{{ item.module_enseigne }}</td>
-                        <td class="text-center">{{ item.volumeAutorise }}</td>
-                        <td class="text-center">{{ item.nbSemaine }}</td>
-                        <td class="text-center toModify">{{ item.nbHeursSupp }}</td>
-                    </tr>
+                <tr class="modefiable border">
+                    <td class="border px-4 py-2 text-center  id-cell">{{ item.id }}</td>  
+                    <td class="border px-4 py-2 text-center  ">{{loop.index }}</td>  
+                    <td class="border px-4 py-2 text-center">{{ item.nom }} {{ item.prenom }}</td>
+                    <td class="border px-4 py-2 text-center">{{ item.grade }}</td>
+                    <td class="border px-4 py-2 text-center">{{ item.module_enseigne }}</td>
+                    <td class="border px-4 py-2 text-center">{{ item.volumeAutorise }}</td>
+                    <td class="border px-4 py-2 text-center">{{ item.nbSemaine }}</td>
+                    <td class="border px-4 py-2 text-center toModify">{{ item.nbHeursSupp }}</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
+        
+        
     </div>
 
-
-    <style>
-        .scrollable-table {
-        max-height: 90%;  
-        overflow-y: auto;  
-        }
- 
-    </style>
-
-    <div class="mt-8 pb-36 cachet">
+    <div class="mt-8 pb-36 not-display  "  >
         <div class="flex items-center justify-around">
             <div >
                 <p class="text-sm ms-5">Reçu le <span class="font-semibold">................</span></p>
@@ -176,50 +178,114 @@
             </div>
         </div>
     </div>
-
+    <style>
+        .animated-dialogue {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+    
+        @keyframes fadeIn {
+            from {
+            opacity: 0;
+            }
+            to {
+            opacity: 1;
+            }
+        }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+    </style>
     <style>
         .noDisplay{
             display: none;
-
         }
+    
+        @media print {
+            .icons {
+                display: none;
+            }
+    
+            body{
+                margin-top: 30px !important;
+            }
+            .yearclass{
+                display: none;
+            }
+            .monthclass{
+                font-weight: bold;
+            }
+            select::-ms-expand {
+                display: none;
+            }
+            select {
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                /* Utiliser une image transparente pour masquer la flèche de sélection */
+                background-image: url('../static/transparent.png');
+                background-repeat: no-repeat;
+                background-position: right center;
+                /* Ajuster la largeur de l'arrière-plan pour couvrir la flèche de sélection */
+                padding-right: 20px; /* Ajustez la valeur selon vos besoins */
+            }
+    
+            title {
+                display: none;
+            }
+    
+        
+        }
+    
+        .scrollable-table {
+    max-height: 500px; /* Set a fixed maximum height or adjust as needed */
+    overflow-y: auto;
+}
+        td.id-cell{
+            display: none;
+        }
+        .display{
+            display: block;
+        }
+        .not-display{
+            display: none;
+        }
+        .select-after-print{
+            border: none !important;
+            border-style: none;
+            font-style: none;
+            
+        }
+        .no-border {
+            border: none;
+        }
+ 
+
     </style>
+    
+ 
 
-    <script>
 
-// Changer la couleur du bouton actif: 
-    const button1 = document.querySelector(".btn1");
-    const button2 = document.querySelector(".btn2");
-
-    function changeColor(numButton) {
-        let type;
-        if (numButton === 1) {
-            type = "permanant";
-            button1.classList.remove('bg-blue-300');
-            button1.classList.add('bg-blue-950');
-            button2.classList.remove('bg-blue-950');
-            button2.classList.add('bg-blue-300');
-        } else {
-            type = "vaccataire";
-            button2.classList.remove('bg-blue-300');
-            button2.classList.add('bg-blue-950');
-            button1.classList.remove('bg-blue-950');
-            button1.classList.add('bg-blue-300');
-        }
-
-        const url = `/fiche-heurs-supps/${type}/<str:year>/<str:month>/`;
-
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    
+    const select = document.getElementById('prof_type');
+    select.addEventListener('change',function(){
+        const selectedValue = select.value;
+        const year = "{{ year }}"; // Récupérer l'année actuelle
+        const month = "{{ month }}"; // Récupérer le mois actuel
+        const url = `/fiche-heurs-supps/${selectedValue}/${year}/${month}/`;
         window.location.href = url;
-    }
+    })
+});
 
-    button1.addEventListener("click", function() {
-        changeColor(1);
-    });
-    button2.addEventListener("click", function() {
-        changeColor(2);
-    });
-// ________________________________________________________________________________________________
+
+
+
+    // ________________________________________________________________________________________________
+    // Ajouter la classe 'scrollable-table' si le tableau contient plus de 12 lignes
 // Ajouter la classe 'scrollable-table' si le tableau contient plus de 12 lignes
-    document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function() {
         const teacherTable = document.getElementById("teacher-table");
         const tableContainer = document.getElementById("table-container");
 
@@ -229,23 +295,62 @@
     });
 
 
+    document.addEventListener("DOMContentLoaded", function() {
+    const teacherTable = document.getElementById("teacher-table");
+    const tableContainer = document.getElementById("table-container");
 
+    function updateScrollability() {
+        if (teacherTable.rows.length > 12) {
+            tableContainer.classList.add("scrollable-table");
+        } else {
+            tableContainer.classList.remove("scrollable-table");
+        }
+    }
 
-// ________________________________________________________________________________________________
-// Filtrer les options de mois en fonction de l'année sélectionnée
+    // Add event listener for window resize
+    window.addEventListener("resize", updateScrollability);
+
+    // Function to remove scrollability before printing
+    function beforePrintHandler() {
+        tableContainer.classList.remove("scrollable-table");
+    }
+
+    // Function to restore scrollability after printing
+    function afterPrintHandler() {
+        updateScrollability();
+    }
+
+    // Listen for before and after printing events
+    if (window.matchMedia) {
+        const mediaQueryList = window.matchMedia("print");
+        mediaQueryList.addListener(function(mql) {
+            if (mql.matches) {
+                beforePrintHandler();
+            } else {
+                afterPrintHandler();
+            }
+        });
+    }
+
+    // For older browsers that don't support matchMedia
+    window.onbeforeprint = beforePrintHandler;
+    window.onafterprint = afterPrintHandler;
+
+    // Initial check for scrollability
+    updateScrollability();
+});
+    // ________________________________________________________________________________________________
+    // Filtrer les options de mois en fonction de l'année sélectionnée
     const selectYear = document.querySelector('select[name="selected_year"]');
     const selectMonth = document.querySelector('select[name="selected_month"]');
-
-
+    
     selectYear.addEventListener('change', function() {
         const selectedYear = selectYear.value;
-
-
+    
         for (let i = 0; i < selectMonth.options.length; i++) {
             const option = selectMonth.options[i];
             const [month, year] = option.value.split('-');
-
-        
+    
             if (year === selectedYear) {
                 option.style.display = 'block'; 
             } else {
@@ -265,48 +370,65 @@
         const url = `/fiche-heurs-supps/{{ type }}/${selectedYear}/${selectedMonth}/`;
         window.location.href = url;
     });
-
+    
     selectYear.value = "{{ year }}";
     selectMonth.value = "{{ month }}-{{ year }}";
-
+    
     selectYear.dispatchEvent(new Event('change'));
-
-
-
-
-// ________________________________________________________________________________________________
-
-// Fonctionnalité d'impression et de téléchargement 
+    
+    // ________________________________________________________________________________________________
+    
+    // Fonctionnalité d'impression et de téléchargement 
     document.addEventListener("DOMContentLoaded", function() {
-        const printButton = document.querySelector('button[name="print"]');
+    const printButton = document.querySelector('button[name="print"]');
 
-        printButton.addEventListener('click', function() {
+    printButton.addEventListener('click', function() {
+        const tableContainer = document.getElementById("table-container");
+        const teacherTable = document.getElementById("teacher-table");
+        const divCachet = document.querySelector('.not-display'); 
+        const select = document.getElementById("prof_type")
 
-            const tableContainer = document.getElementById("table-container");
-            const teacherTable = document.getElementById("teacher-table");
-            tableContainer.classList.remove("scrollable-table");
-            teacherTable.classList.remove("table-container");
 
-            print();
-            setTimeout(function() {
-                tableContainer.classList.add("scrollable-table");
-                teacherTable.classList.add("table-container");
-            }, 500);  
-        });
+        select.classList.add('select-after-print')
 
+        divCachet.classList.remove('not-display');
+        divCachet.classList.add('display');
+
+        print();
+
+        select.classList.remove('select-after-print')
+        divCachet.classList.remove('display');
+        divCachet.classList.add('not-display')
+        console.log(divCachet);
+        tableContainer.classList.remove("scrollable-table");
+        teacherTable.classList.remove("table-container");
+
+         
+
+    
+
+        
+        setTimeout(function() {
+            tableContainer.classList.add("scrollable-table");
+            teacherTable.classList.add("table-container");
+        }, 500);
     });
+});
 
-// ________________________________________________________________________________________________
-
-// fonctionnalité de modification :
-const modifierButton = document.querySelector('.modifier-button');
-const saveButton = document.querySelector('button[name="save"]');
-
+    
+    // ________________________________________________________________________________________________
+    
+    // fonctionnalité de modification :
+    const modifierButton = document.querySelector('.modifier-button');
+    const saveButton = document.querySelector('button[name="save"]');
+    
+    
     modifierButton.addEventListener('click', function() {
+        
         const modefiableCells = document.querySelectorAll('.toModify');
         modifierButton.classList.add('noDisplay');
         saveButton.classList.remove('noDisplay');
-
+    
         modefiableCells.forEach(function(cell) {
             const input = document.createElement('input');
             input.type = 'text';
@@ -314,67 +436,62 @@ const saveButton = document.querySelector('button[name="save"]');
             cell.appendChild(input);
         });
     });
-
-saveButton.addEventListener('click', function() {
-    const modefiableCells = document.querySelectorAll('.toModify');
-    const selectYear = document.querySelector('select[name="selected_year"]');
-    const selectMonth = document.querySelector('select[name="selected_month"]');
-    console.log(selectYear.value, selectMonth.value)
-
-
-    const requestData = {
-    data: [],
-    year: selectYear.value,
-    month: selectMonth.value.split('-')[0]
-    };
-    modefiableCells.forEach(function(cell) {
-        const input = cell.querySelector('input');
-        let edited = 0;
-        if (input.value !== cell.textContent.trim()) {
-            edited = 1;  
-        }
-        requestData.data.push({'id': cell.parentElement.children[0].textContent, 'nbHeursSupp': input.value, 'edited': edited });
-        cell.textContent = input.value; 
-
-    });
-
-
-    saveButton.classList.add('noDisplay');
-    modifierButton.classList.remove('noDisplay');
     
- 
-    fetch(`/fiche-heurs-supps/save/`, {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': '{{ csrf_token }}',
-    },
-    body: JSON.stringify({ requestData: requestData }),
-})
-    .then(response => response.json())
-    .then(requestData => {
-        if (requestData.success) {
-            console.log('Les données ont été sauvegardées avec succès.');
-        } else {
-            console.error('La sauvegarde des données a échoué.');
-        }
-    })
-    .catch(error => {
-        console.error('Une erreur s\'est produite lors de la sauvegarde des données:', error);
-    });
-});
-
- 
-
-
-
-
+    saveButton.addEventListener('click', function() {
+        const modefiableCells = document.querySelectorAll('.toModify');
+        const alert = document.getElementById("save-dialogue")
+        console.log(alert)
+        alert.classList.remove('hidden')
+        const selectYear = document.querySelector('select[name="selected_year"]');
+        const selectMonth = document.querySelector('select[name="selected_month"]');
+        console.log(selectYear.value, selectMonth.value)
     
-
-
-</script>
+        const requestData = {
+            data: [],
+            year: selectYear.value,
+            month: selectMonth.value.split('-')[0]
+        };
+        modefiableCells.forEach(function(cell) {
+            const input = cell.querySelector('input');
+            let edited = 0;
+            if (input.value !== cell.textContent.trim()) {
+                edited = 1;  
+            }
+            requestData.data.push({'id': cell.parentElement.children[0].textContent, 'nbHeursSupp': input.value, 'edited': edited });
+            cell.textContent = input.value; 
+    
+        });
+    
+        saveButton.classList.add('noDisplay');
+        modifierButton.classList.remove('noDisplay');
+    
+        fetch(`/fiche-heurs-supps/save/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({ requestData: requestData }),
+        })
+        .then(response => response.json())
+        .then(requestData => {
+            if (requestData.success) {
+                console.log('Les données ont été sauvegardées avec succès.');
+            } else {
+                console.error('La sauvegarde des données a échoué.');
+            }
+        })
+        .catch(error => {
+            console.error('Une erreur s\'est produite lors de la sauvegarde des données:', error);
+        });
+    });
+    
+    </script>
+    
 
 
 </body>
 
 {% endblock %}
+
+ 
