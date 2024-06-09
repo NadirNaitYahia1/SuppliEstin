@@ -30,39 +30,38 @@
   <body>
 
 
-    <div class="mx-auto w-[90%]">
-      <div>
-        <p class="text-center">
-          الجمهوريــة الجزائريــة الديمقراطيــة الشعبيــة
-        </p>
-        <p class="text-center">
-          Republique Algérienne Démocratique et Populaire
-        </p>
-      </div>
-
-      <div class="flex justify-between items-center">
-        <div class="title-2 w-[30%]">
-          <p>
-            Ministère de l'Enseignement Supérieur et de la Recherche
-            Scientifique
-          </p>
-          <p>
-            École supérieure en Sciences et Technologies de l'Informatique et du
-            Numérique -Bejaia-
-          </p>
+    <div class="mr-3 ml-3 flex  justify-between font-bold  ">
+ 
+        
+        <div class="justify-start my-auto">
+          <!-- <p class="text-ce"> -->
+           <p class="text-center"> Ministère de l'Enseignement Supérieur</p> 
+            <p class="text-center">et de la Recherche Scientifique</p>
+            <p class="text-center">École supérieure en Sciences et Technologies</p> 
+            <p class="text-center">de l'Informatique et du Numérique -Bejaia-</p>          
+ 
         </div>
 
-        <div class="logo-1 h-[10%] w-[15%]">
-          <img src="{% static '../static/estin.png' %}" alt="logo" />
+
+        <div   >
+          <p  class="text-center">
+            الجمهوريــة الجزائريــة الديمقراطيــة الشعبيــة
+          </p>
+          <p  class="ml-5">
+            Republique Algérienne Démocratique et Populaire
+          </p>
+          <img src="{% static '../static/estin2.png' %}" alt="logo" class="ml-[20%]" >
         </div>
 
-        <div class="title-2 w-[30%]">
-          <p>وزارة التعليم العالي والبحث العلمي</p>
-          <p>
-            المدرسة العليا في علوم وتكنولوجيات الاعلام الالي والرقمنة -بجاية
-          </p>
+
+ 
+        <div class="title-2  justify-end  my-auto ">
+          <p class="text-center">وزارة التعليم العالي والبحث العلمي</p>
+          <p class="text-center">
+            المدرسة العليا في علوم وتكنولوجيات          </p>
+            <p class="text-center">الاعلام الالي والرقمنة -بجاية</p>
         </div>
-      </div>
+ 
     </div>
     <div id="content"  >{% block content %} {% endblock %}</div>
   </body>

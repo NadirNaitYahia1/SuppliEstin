@@ -1,7 +1,9 @@
 {% extends "header.html" %} {% block title %}Heures supplémentaires pour un seul
 enseignant{% endblock %} {% block content %}
-<section class="grid grid-cols-2 gap-[50px] px-[5%]">
-  <div class="w-full p-5 col-span-1 grid grid-cols-2 gap-x-[30px] gap-y-[10px]">
+
+<body class="mx-auto  mb-10 border-2 border-black-900 mt-10  ">
+<section class="grid grid-cols-2 gap-[50px] px-[5%] printable">
+    <div class="w-full p-5 col-span-1 grid grid-cols-2 gap-x-[30px] gap-y-[10px]">
     <h3>Departement:</h3>
     <div class="w-full border border-gray-300 flex items-center justify-center">
         Informatique
@@ -34,7 +36,46 @@ enseignant{% endblock %} {% block content %}
   </div>
 </section>
 
-<div class="flex justify-end px-[5%] w-full text-xl gap-8 text-gray-700">
+
+<section class="section-container   mx-auto  hidden " id="section-info-perso-after-print">
+    <div class="card-container   ">
+      <div class="info-container">
+        <div class="info-item">
+          <div class="label">Departement:</div>
+          <div class="value">Informatique</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Nom et prénom:</div>
+          <div class="value">{{ nom_enseignant }} {{ prenom_enseignant }}</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Status:</div>
+          <div class="value">
+            {% if statut_enseignant == "V" %}
+            Vacataire
+            {% else %}
+            Permanent
+            {% endif %}
+          </div>
+        </div>
+        <div class="info-item  ">
+          <div class="label">Grade:</div>
+          <div class="value">{{ grade_enseignant }}</div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="card-wrapper  ">
+      <div class="card">
+        <p>Fiche de Suivi des Heures Supplémentaires</p>
+        <p>Mois: <span class="font-semibold">{{ month }}</span></p>  
+      </div>
+    </div>
+  </section>
+  
+
+
+<div class="flex justify-end px-[5%] w-full text-xl gap-8 text-gray-700" id="icons">
     <button class="relative" id="reset-btn">
         <i class="fas fa-redo-alt"></i>
         <div
@@ -82,13 +123,13 @@ enseignant{% endblock %} {% block content %}
     </button>
 </div>
 
-<section class="px-[5%] felx flex-col items-center gap-[50px] pb-[40px]">
+<section class="px-[5%] felx flex-col items-center gap-[50px] pb-[40px]" id="section-befor-print">
     {% for semaine in semaines %}
         <div class="flex flex-col items-center my-10 gap-4" id="semaine-container">
-            <div class="w-full flex justify-center">
+            <div class="w-full flex justify-center " id="semaine-num">
                 <h2 class="font-bold text-blue-600 text-xl">Semaine {{ semaine.numSemaine }}</h2>
             </div>
-            <div class="w-full flex justify-end items-center gap-3 text-gray-700 text-xl">
+            <div class="w-full flex justify-end items-center gap-3 text-gray-700 text-xl" id="icons-session">
                 <button id="delete-btn{{semaine.numSemaine}}">
                     <i class="fa-solid fa-delete-left"></i>
                 </button>
@@ -96,7 +137,7 @@ enseignant{% endblock %} {% block content %}
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
-            <div class="w-full flex flex-col border border-gray-600 gap-[2px] relative" id="semaines-list{{semaine.numSemaine}}">
+            <div class="w-full flex flex-col border border-gray-600 gap-[2px] relative " id="semaines-list{{semaine.numSemaine}}">
                 <div class="grid grid-cols-5 gap-x-[2px] font-bold">
                     <div class="flex items-center justify-center py-[2px]">Date</div>
                     <div class="flex items-center justify-center py-[2px]">Heure de début</div>
@@ -105,7 +146,7 @@ enseignant{% endblock %} {% block content %}
                     <div class="flex items-center justify-center py-[2px]">Nombre d'heurs</div>
                 </div>
                 {% for session in semaine.sessions %}
-                    <div class="grid grid-cols-5 gap-x-[2px] font-semibold relative">
+                    <div class="grid grid-cols-5 gap-x-[2px] font-semibold relative  ">
                         <p class="hidden" id="session-id">{{session.7}}</p>
                         <p class="hidden" id="week-number">{{session.0}}</p>
                         <div class="flex items-center justify-center py-[2px] bg-gray-200">{{session.1}}</div>
@@ -123,6 +164,39 @@ enseignant{% endblock %} {% block content %}
         </div>
     {% endfor %}
 </section>
+
+
+<div id="table-container" class="table-container mb-8 mx-2 border border-slate-900 hidden" id="section-after-print">
+    <table class="w-full mx-auto border border-collapse" id="semaines-list{{semaine.numSemaine}}">
+        <thead class="bg-gray-200">
+            <tr class="tr-text">
+                <th class="border px-4 py-2">Date</th>
+                <th class="border px-4 py-2">Heure de début</th>
+                <th class="border px-4 py-2">Heure de fin</th>
+                <th class="border px-4 py-2">Type séance</th>
+                <th class="border px-4 py-2">Nombre d'heurs</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for semaine in semaines %}
+            {% for session in semaine.sessions %}
+                <tr class="modefiable border">
+                    <td class="border px-4 py-2 text-center">{{ session.1 }}</td>
+                    <td class="border px-4 py-2 text-center">{{ session.2 }}</td>
+                    <td class="border px-4 py-2 text-center">{{ session.3 }}</td>
+                    <td class="border px-4 py-2 text-center">{{ session.4 }}</td>
+                    <td class="border px-4 py-2 text-center">{{ session.5 }}h {{ session.6 }}min</td>
+                </tr>
+            {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
 <!-- ______________________________________________ Dialogues ___________________________________________________ -->
 <div class="bg-black fixed top-0 left-0 right-0 bottom-0 opacity-40 z-20 hidden" id="bg-dialogue">
 </div>
@@ -248,11 +322,102 @@ enseignant{% endblock %} {% block content %}
         Total des heures supplémentaires sauvegardées: <span class="text-blue-600">{{ heursSupps }}h {{ minutesSupps }}min</span>
     </h4>
 </section>
-
+</body>
 <style>
+    *{
+      font-family: "Times New Roman", Times, serif;
+    }
+
+    body{
+        width: 90% !important;
+    }
     .animated-dialogue {
         animation: fadeIn 0.5s ease-in-out;
     }
+    @media print{
+        
+        body{
+            width: 100%;
+            margin-top: 30px !important;
+            border: none;
+        }
+        #section-after-print{
+            width: 100%;
+        }
+        #semaine-num{
+            display: none;
+        }
+        #icons{
+            display: none;
+        }
+        #icons-session{
+            display: none;
+        }
+
+        .printable{
+    display: none;
+}
+
+        #section-befor-print{
+            display: none;
+        }
+        .table-container{
+            display: contents !important;
+        }
+        #section-info-perso-after-print{
+    display: flex   ;
+    flex-direction: row;
+  align-items: center;
+}.card-container {
+  width: 50%;
+}
+
+
+.info-container {
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.info-container .info-item {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+}
+
+.info-container .info-item:last-child {
+  border-bottom: none;
+}
+
+.info-container .info-item .label {
+  width: 30%;
+  padding: 5px;
+  border-right: 1px solid #ccc;
+}
+
+.info-container .info-item .value {
+  flex: 1;
+  padding: 3px;
+}
+
+.card-wrapper {
+  width: 50%; /* Adjusted width */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+ 
+}
+
+.card {
+  width: 90%;
+  padding: 20px;
+  border: 4px double black;
+  border-radius: 10px;
+  text-align: center;
+}
+ 
+ 
+    }
+ 
 
     @keyframes fadeIn {
         from {
@@ -289,7 +454,14 @@ enseignant{% endblock %} {% block content %}
     let isMouseOverSubmitBtn = false;
     let isMouseOverDownloadBtn = false;
     let isMouseOverPrintBtn = false;
+// print:
+    printBtn.addEventListener('click',()=>{
+         print()
+    })
 
+
+
+// _____________________________________
     disableSaveBtn();
     disableResetBtn();
     disableDeleteButtons()
